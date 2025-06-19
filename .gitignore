@@ -1,0 +1,5 @@
+# But do not ignore example.env
+!env/example.env
+
+go.sum
+env/local.env
