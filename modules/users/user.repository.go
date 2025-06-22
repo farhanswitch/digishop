@@ -30,3 +30,10 @@ func (u userRepo) RegisterUser(user RegisterUserRequest) (bool, custom_errors.Cu
 	}
 	return false, custom_errors.CustomError{}
 }
+
+func factoryUserRepo() userRepo {
+	if repo == (userRepo{}) {
+		repo = userRepo{}
+	}
+	return repo
+}

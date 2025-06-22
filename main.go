@@ -7,6 +7,7 @@ import (
 
 	"digishop/configs"
 	"digishop/connections"
+	"digishop/modules/users"
 
 	chi "github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -17,6 +18,7 @@ func main() {
 	router := chi.NewRouter()
 
 	initPlugins(router)
+	internalModules(router)
 
 	router.Get("/hello", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -31,6 +33,9 @@ func main() {
 func initModules() {
 	configs.InitModule("./env/local.env")
 	connections.DbMySQL()
+}
+func internalModules(router *chi.Mux) {
+	users.InitModule(router)
 }
 func initPlugins(router *chi.Mux) {
 	router.Use(middleware.Recoverer)

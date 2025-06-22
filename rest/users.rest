@@ -1,0 +1,13 @@
+### REGISTER
+POST http://localhost:4777/user/register
+Content-Type: application/json
+
+{
+  "username": "geezcahyadi",
+  "password": "123456",
+  "firstName": "Gazza",
+  "lastName": "Cahyadi",
+  "email":"geez@mail.com",
+  "phoneNumber":"081234567890",
+  "userType": "Seller"
+}
