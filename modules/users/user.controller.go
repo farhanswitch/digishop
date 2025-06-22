@@ -35,6 +35,7 @@ func (u userController) RegisterUserCtrl(w http.ResponseWriter, r *http.Request)
 	if isErr {
 		log.Println(errObj)
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, `{"message":"%s"}`, errObj.MessageToSend)
 		return
 	}
 	w.WriteHeader(http.StatusOK)

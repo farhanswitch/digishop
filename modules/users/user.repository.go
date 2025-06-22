@@ -12,12 +12,12 @@ var repo userRepo
 func (u userRepo) RegisterUser(user RegisterUserRequest) (bool, custom_errors.CustomError) {
 	_, err := connections.DbMySQL().Query("CALL create_user(?,?,?,?,?,?,?,?)", user.ID, user.Username, user.FirstName, user.LastName, user.Email, user.Password, user.PhoneNumber, user.UserType)
 	if err != nil {
-		if err.Error() == "Error 45000: Email already registered." {
+		if err.Error() == "Error 1644 (45000): Email already registered." {
 			customErr := custom_errors.CustomError{
-				Code:    422,
-				Message: err.Error(),
+				Code:          422,
+				MessageToSend: "Email already registered. Please login",
+				Message:       err.Error(),
 			}
-			customErr.Compile()
 			return true, customErr
 		} else {
 			customErr := custom_errors.CustomError{

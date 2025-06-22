@@ -9,5 +9,5 @@ Content-Type: application/json
   "lastName": "Cahyadi",
   "email":"geez@mail.com",
   "phoneNumber":"081234567890",
-  "userType": "Seller"
+  "userType": "Buyer"
 }
