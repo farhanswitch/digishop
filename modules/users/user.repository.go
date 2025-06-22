@@ -3,6 +3,7 @@ package users
 import (
 	"digishop/connections"
 	custom_errors "digishop/utilities/errors"
+	"net/http"
 )
 
 type userRepo struct{}
@@ -30,7 +31,41 @@ func (u userRepo) RegisterUser(user RegisterUserRequest) (bool, custom_errors.Cu
 	}
 	return false, custom_errors.CustomError{}
 }
+func (u userRepo) LoginUser(param LoginUserRequest) (custom_errors.CustomError, LoginUserRequest) {
+	result, err := connections.DbMySQL().Query("CALL login(?,?)", param.Username, param.UserType)
+	if err != nil {
 
+		return custom_errors.CustomError{
+			Code:          http.StatusBadRequest,
+			Message:       err.Error(),
+			MessageToSend: "Invalid username or password",
+		}, LoginUserRequest{}
+
+	}
+	if result.Next() {
+		var data LoginUserRequest
+		err := result.Scan(&data.ID, &data.Username, &data.Password, &data.UserType)
+		if err != nil {
+			return custom_errors.CustomError{
+				Code:          http.StatusBadRequest,
+				Message:       err.Error(),
+				MessageToSend: "Invalid username or password",
+			}, LoginUserRequest{}
+		}
+		switch data.UserType {
+		case 0:
+			data.StrUserType = "Buyer"
+		case 1:
+			data.StrUserType = "Seller"
+		}
+		return custom_errors.CustomError{}, data
+	}
+	return custom_errors.CustomError{
+		Code:          http.StatusInternalServerError,
+		Message:       "Unhandled condition",
+		MessageToSend: "Invalid username or password",
+	}, LoginUserRequest{}
+}
 func factoryUserRepo() userRepo {
 	if repo == (userRepo{}) {
 		repo = userRepo{}

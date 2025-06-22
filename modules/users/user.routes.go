@@ -7,4 +7,5 @@ func InitModule(router *chi.Mux) {
 	controller := factoryUserController(repo)
 
 	router.Post("/user/register", controller.RegisterUserCtrl)
+	router.Post("/user/login", controller.LoginUserCtrl)
 }

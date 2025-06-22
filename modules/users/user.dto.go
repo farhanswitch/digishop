@@ -14,6 +14,15 @@ type RegisterUserRequest struct {
 	ID          string `json:"id"`
 }
 
+type LoginUserRequest struct {
+	UserType    uint8  `json:"-"`
+	StrUserType string `json:"userType" validate:"required,oneof='Seller' 'Buyer'"`
+	Username    string `json:"username" validate:"required,min=6,max=15"`
+	Password    string `json:"password" validate:"required"`
+	ID          string `json:"id"`
+}
+
 type iRepo interface {
 	RegisterUser(user RegisterUserRequest) (bool, custom_errors.CustomError)
+	LoginUser(param LoginUserRequest) (custom_errors.CustomError, LoginUserRequest)
 }
