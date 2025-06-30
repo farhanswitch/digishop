@@ -15,14 +15,14 @@ func (u userRepo) RegisterUser(user RegisterUserRequest) (bool, custom_errors.Cu
 	if err != nil {
 		if err.Error() == "Error 1644 (45000): Email already registered." {
 			customErr := custom_errors.CustomError{
-				Code:          422,
+				Code:          http.StatusUnprocessableEntity,
 				MessageToSend: "Email already registered. Please login",
 				Message:       err.Error(),
 			}
 			return true, customErr
 		} else {
 			customErr := custom_errors.CustomError{
-				Code:          500,
+				Code:          http.StatusInternalServerError,
 				Message:       err.Error(),
 				MessageToSend: "Internal server error.",
 			}
@@ -34,13 +34,19 @@ func (u userRepo) RegisterUser(user RegisterUserRequest) (bool, custom_errors.Cu
 func (u userRepo) LoginUser(param LoginUserRequest) (custom_errors.CustomError, LoginUserRequest) {
 	result, err := connections.DbMySQL().Query("CALL login(?,?)", param.Username, param.UserType)
 	if err != nil {
-
-		return custom_errors.CustomError{
-			Code:          http.StatusBadRequest,
-			Message:       err.Error(),
-			MessageToSend: "Invalid username or password",
-		}, LoginUserRequest{}
-
+		if err.Error() == "Error 1644 (45001): User not found." {
+			return custom_errors.CustomError{
+				Code:          http.StatusBadRequest,
+				Message:       err.Error(),
+				MessageToSend: "Invalid username or password",
+			}, LoginUserRequest{}
+		} else {
+			return custom_errors.CustomError{
+				Code:          http.StatusInternalServerError,
+				Message:       err.Error(),
+				MessageToSend: "Internal server error.",
+			}, LoginUserRequest{}
+		}
 	}
 	if result.Next() {
 		var data LoginUserRequest
