@@ -118,6 +118,7 @@ func (u userService) LoginUser(param LoginUserRequest) (custom_errors.CustomErro
 	}
 	err = utilities.RedisInstance().SaveValue(fmt.Sprintf("TOKEN_%s_1", loginData.Username), strToken, time.Duration(configs.GetConfig().Service.SessionTime)*time.Second)
 
+	claims["token"] = strToken
 	return errObj, claims
 }
 func (u userService) CheckAuthentication(token string) (string, custom_errors.CustomError) {
