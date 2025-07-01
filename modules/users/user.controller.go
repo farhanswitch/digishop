@@ -1,6 +1,7 @@
 package users
 
 import (
+	custom_errors "digishop/utilities/errors"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -29,6 +30,9 @@ func (u userController) RegisterUserCtrl(w http.ResponseWriter, r *http.Request)
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusBadRequest)
+		objError := custom_errors.ParseError(err)
+		strError, _ := json.Marshal(objError)
+		fmt.Fprintf(w, `{"errors":"%s"}`, strError)
 		return
 	}
 	isErr, errObj := u.service.RegisterUser(param)
@@ -56,6 +60,9 @@ func (u userController) LoginUserCtrl(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusBadRequest)
+		objError := custom_errors.ParseError(err)
+		strError, _ := json.Marshal(objError)
+		fmt.Fprintf(w, `{"errors":"%s"}`, strError)
 		return
 	}
 	errObj, data := u.service.LoginUser(param)
