@@ -89,7 +89,6 @@ func (u userService) LoginUser(param LoginUserRequest) (custom_errors.CustomErro
 		"Expiry":   jwt.NewNumericDate(time.Now().Add(1 * time.Hour)),
 		"IssuedAt": jwt.NewNumericDate(time.Now()),
 	}
-	log.Println(time.Now())
 	strToken, err := utilities.JWEEncryptAES(claims, []byte(configs.GetConfig().Service.EncryptKey))
 	if err != nil {
 		log.Println(err)
@@ -120,6 +119,62 @@ func (u userService) LoginUser(param LoginUserRequest) (custom_errors.CustomErro
 	err = utilities.RedisInstance().SaveValue(fmt.Sprintf("TOKEN_%s_1", loginData.Username), strToken, time.Duration(configs.GetConfig().Service.SessionTime)*time.Second)
 
 	return errObj, claims
+}
+func (u userService) CheckAuthentication(token string) (string, custom_errors.CustomError) {
+	decryptedClaims, err := utilities.JWEDecryptAES(token, []byte(configs.GetConfig().Service.EncryptKey))
+	if err != nil {
+		log.Println(err)
+		return "", custom_errors.CustomError{
+			Code:          http.StatusUnauthorized,
+			Message:       err.Error(),
+			MessageToSend: "Unauthencticated",
+		}
+	}
+	username, ok := decryptedClaims["username"].(string)
+	if !ok {
+		log.Println(err)
+		return "", custom_errors.CustomError{
+			Code:          http.StatusUnauthorized,
+			Message:       err.Error(),
+			MessageToSend: "Unauthencticated",
+		}
+	}
+	token1, err := utilities.RedisInstance().GetValue(fmt.Sprintf("TOKEN_%s_1", username))
+	if err != nil {
+		log.Println(err)
+		if err.Error() == "redis: nil" {
+			token1 = ""
+		} else {
+
+			return "", custom_errors.CustomError{
+				Code:          http.StatusUnauthorized,
+				Message:       err.Error(),
+				MessageToSend: "Unauthencticated",
+			}
+		}
+	}
+	token2, err := utilities.RedisInstance().GetValue(fmt.Sprintf("TOKEN_%s_2", username))
+	if err != nil {
+		log.Println(err)
+		if err.Error() == "redis: nil" {
+			token2 = ""
+		} else {
+
+			return "", custom_errors.CustomError{
+				Code:          http.StatusUnauthorized,
+				Message:       err.Error(),
+				MessageToSend: "Unauthencticated",
+			}
+		}
+	}
+	if token1 != token && token2 != token {
+		return "", custom_errors.CustomError{
+			Code:          http.StatusUnauthorized,
+			Message:       "Token missmatch with token saved in Redis",
+			MessageToSend: "Unauthencticated",
+		}
+	}
+	return token1, custom_errors.CustomError{}
 }
 
 func factoryUserService(repo iRepo) userService {

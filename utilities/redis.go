@@ -21,7 +21,11 @@ func (ru RedisUtility) DeleteValue(key string) error {
 	err := connections.ConnectRedis().Del(ctx, key).Err()
 	return err
 }
-
+func (ru RedisUtility) GetValue(key string) (string, error) {
+	var ctx context.Context = context.TODO()
+	value, err := connections.ConnectRedis().Get(ctx, key).Result()
+	return value, err
+}
 func RedisInstance() RedisUtility {
 	if redisUtility == (RedisUtility{}) {
 		redisUtility = RedisUtility{}
