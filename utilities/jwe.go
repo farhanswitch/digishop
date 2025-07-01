@@ -87,7 +87,7 @@ func WriteKeysToFile(privateKey *rsa.PrivateKey, publicKey *rsa.PublicKey, fileP
 	return nil
 }
 
-func Encrypt(claims map[string]interface{}, publicKey *rsa.PublicKey) (string, error) {
+func JWEEncryptRSA(claims map[string]interface{}, publicKey *rsa.PublicKey) (string, error) {
 	// Create encrypter
 	encrypter, err := jose.NewEncrypter(
 		jose.A256GCM,
@@ -107,7 +107,7 @@ func Encrypt(claims map[string]interface{}, publicKey *rsa.PublicKey) (string, e
 	}
 	return jweToken, nil
 }
-func Decrypt(jweToken string, privateKey *rsa.PrivateKey) (map[string]interface{}, error) {
+func JWEDecryptRSA(jweToken string, privateKey *rsa.PrivateKey) (map[string]interface{}, error) {
 	// Dekripsi
 	parsed, err := jwt.ParseEncrypted(jweToken)
 	if err != nil {
@@ -125,7 +125,7 @@ func Decrypt(jweToken string, privateKey *rsa.PrivateKey) (map[string]interface{
 
 // EncryptAES mengenkripsi claims menjadi JWE token menggunakan enkripsi simetris AES-256.
 // 'secretKey' harus memiliki panjang 32 byte.
-func EncryptAES(claims map[string]interface{}, secretKey []byte) (string, error) {
+func JWEEncryptAES(claims map[string]interface{}, secretKey []byte) (string, error) {
 	// Validasi panjang kunci untuk AES-256
 	if len(secretKey) != 32 {
 		return "", errors.New("secret key must be 32 bytes long for AES-256")
@@ -155,7 +155,7 @@ func EncryptAES(claims map[string]interface{}, secretKey []byte) (string, error)
 
 // DecryptAES mendekripsi JWE token yang dienkripsi dengan AES-256.
 // 'secretKey' harus sama dengan yang digunakan untuk enkripsi dan memiliki panjang 32 byte.
-func DecryptAES(jweToken string, secretKey []byte) (map[string]interface{}, error) {
+func JWEDecryptAES(jweToken string, secretKey []byte) (map[string]interface{}, error) {
 	// Validasi panjang kunci untuk AES-256
 	if len(secretKey) != 32 {
 		return nil, errors.New("secret key must be 32 bytes long for AES-256")

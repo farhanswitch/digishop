@@ -63,9 +63,19 @@ func (u userService) LoginUser(param LoginUserRequest) (custom_errors.CustomErro
 	if errObj.Code > 10 {
 		return errObj, map[string]any{}
 	}
-	err := bcrypt.CompareHashAndPassword([]byte(loginData.Password), []byte(param.Password))
+
+	decryptedPassword, err := utilities.DecryptRSA(param.Password)
 	if err != nil {
 		log.Println(err)
+		return custom_errors.CustomError{
+			Code:          http.StatusBadRequest,
+			Message:       err.Error(),
+			MessageToSend: "Invalid username or password",
+		}, map[string]any{}
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(loginData.Password), decryptedPassword)
+	if err != nil {
+		log.Println(err, "999")
 		return custom_errors.CustomError{
 			Code:          http.StatusBadRequest,
 			Message:       err.Error(),
@@ -79,7 +89,8 @@ func (u userService) LoginUser(param LoginUserRequest) (custom_errors.CustomErro
 		"Expiry":   jwt.NewNumericDate(time.Now().Add(1 * time.Hour)),
 		"IssuedAt": jwt.NewNumericDate(time.Now()),
 	}
-	strToken, err := utilities.EncryptAES(claims, []byte(configs.GetConfig().Service.EncryptKey))
+	log.Println(time.Now())
+	strToken, err := utilities.JWEEncryptAES(claims, []byte(configs.GetConfig().Service.EncryptKey))
 	if err != nil {
 		log.Println(err)
 		return custom_errors.CustomError{
