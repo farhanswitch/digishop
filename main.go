@@ -33,6 +33,7 @@ func main() {
 func initModules() {
 	configs.InitModule("./env/local.env")
 	connections.DbMySQL()
+	connections.ConnectRedis()
 }
 func internalModules(router *chi.Mux) {
 	users.InitModule(router)

@@ -2,8 +2,9 @@ package users
 
 import (
 	"digishop/configs"
-	"digishop/utilities/auths"
+	"digishop/utilities"
 	custom_errors "digishop/utilities/errors"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -51,7 +52,7 @@ func (u userService) RegisterUser(user RegisterUserRequest) (bool, custom_errors
 	return u.repo.RegisterUser(user)
 }
 
-func (u userService) LoginUser(param LoginUserRequest) (custom_errors.CustomError, LoginUserRequest) {
+func (u userService) LoginUser(param LoginUserRequest) (custom_errors.CustomError, map[string]any) {
 	switch param.StrUserType {
 	case "Seller":
 		param.UserType = 1
@@ -60,7 +61,7 @@ func (u userService) LoginUser(param LoginUserRequest) (custom_errors.CustomErro
 	}
 	errObj, loginData := u.repo.LoginUser(param)
 	if errObj.Code > 10 {
-		return errObj, loginData
+		return errObj, map[string]any{}
 	}
 	err := bcrypt.CompareHashAndPassword([]byte(loginData.Password), []byte(param.Password))
 	if err != nil {
@@ -69,7 +70,7 @@ func (u userService) LoginUser(param LoginUserRequest) (custom_errors.CustomErro
 			Code:          http.StatusBadRequest,
 			Message:       err.Error(),
 			MessageToSend: "Invalid username or password",
-		}, LoginUserRequest{}
+		}, map[string]any{}
 	}
 	claims := map[string]interface{}{
 		"username": loginData.Username,
@@ -78,27 +79,36 @@ func (u userService) LoginUser(param LoginUserRequest) (custom_errors.CustomErro
 		"Expiry":   jwt.NewNumericDate(time.Now().Add(1 * time.Hour)),
 		"IssuedAt": jwt.NewNumericDate(time.Now()),
 	}
-	strToken, err := auths.EncryptAES(claims, []byte(configs.GetConfig().Service.EncryptKey))
+	strToken, err := utilities.EncryptAES(claims, []byte(configs.GetConfig().Service.EncryptKey))
 	if err != nil {
 		log.Println(err)
 		return custom_errors.CustomError{
-			Code:          http.StatusInternalServerError,
+			Code:          http.StatusBadRequest,
 			Message:       err.Error(),
-			MessageToSend: "Internal Server Error",
-		}, LoginUserRequest{}
+			MessageToSend: "Invalid username or password",
+		}, map[string]any{}
 	}
-	log.Println(strToken)
-	data, err := auths.DecryptAES(strToken, []byte(configs.GetConfig().Service.EncryptKey))
+	err = utilities.RedisInstance().DeleteValue(fmt.Sprintf("TOKEN_%s_1", loginData.Username))
 	if err != nil {
 		log.Println(err)
 		return custom_errors.CustomError{
-			Code:          http.StatusInternalServerError,
+			Code:          http.StatusBadRequest,
 			Message:       err.Error(),
-			MessageToSend: "Internal Server Error",
-		}, LoginUserRequest{}
+			MessageToSend: "Invalid username or password",
+		}, map[string]any{}
 	}
-	log.Println(data)
-	return errObj, loginData
+	err = utilities.RedisInstance().DeleteValue(fmt.Sprintf("TOKEN_%s_2", loginData.Username))
+	if err != nil {
+		log.Println(err)
+		return custom_errors.CustomError{
+			Code:          http.StatusBadRequest,
+			Message:       err.Error(),
+			MessageToSend: "Invalid username or password",
+		}, map[string]any{}
+	}
+	err = utilities.RedisInstance().SaveValue(fmt.Sprintf("TOKEN_%s_1", loginData.Username), strToken, time.Duration(configs.GetConfig().Service.SessionTime)*time.Second)
+
+	return errObj, claims
 }
 
 func factoryUserService(repo iRepo) userService {
