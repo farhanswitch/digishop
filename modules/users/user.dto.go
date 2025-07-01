@@ -5,7 +5,7 @@ import custom_errors "digishop/utilities/errors"
 type RegisterUserRequest struct {
 	UserType    uint8  `json:"-"`
 	StrUserType string `json:"userType" validate:"required,oneof='Seller' 'Buyer'"`
-	Username    string `json:"username" validate:"required,min=6,max=15"`
+	Username    string `json:"username" validate:"required,min=6,max=15,alphanum"`
 	FirstName   string `json:"firstName" validate:"required,min=3,max=50"`
 	LastName    string `json:"lastName" validate:"min=0,max=50"`
 	Password    string `json:"password" validate:"required"`
