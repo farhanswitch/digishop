@@ -136,7 +136,7 @@ func (u userService) CheckAuthentication(token string) (string, custom_errors.Cu
 		log.Println(err)
 		return "", custom_errors.CustomError{
 			Code:          http.StatusUnauthorized,
-			Message:       err.Error(),
+			Message:       "Token has no property username",
 			MessageToSend: "Unauthencticated",
 		}
 	}
