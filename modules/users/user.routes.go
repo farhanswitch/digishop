@@ -1,6 +1,10 @@
 package users
 
-import "github.com/go-chi/chi/v5"
+import (
+	"digishop/middlewares"
+
+	"github.com/go-chi/chi/v5"
+)
 
 func InitModule(router *chi.Mux) {
 	repo := factoryUserRepo()
@@ -9,4 +13,5 @@ func InitModule(router *chi.Mux) {
 	router.Get("/authenticate", controller.CheckAuthenticationCtrl)
 	router.Post("/user/register", controller.RegisterUserCtrl)
 	router.Post("/user/login", controller.LoginUserCtrl)
+	router.With(middlewares.AuthMiddleware).Get("/auth/test", controller.TestCtrl)
 }

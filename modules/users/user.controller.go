@@ -108,7 +108,25 @@ func (u userController) CheckAuthenticationCtrl(w http.ResponseWriter, r *http.R
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, `{"message":"Authenticated","token":"%s"}`, newToken)
 }
-
+func (u userController) TestCtrl(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "application/json")
+	var userData map[string]interface{}
+	headerUserData := r.Header.Get("X-User-Data")
+	if headerUserData == "" {
+		w.WriteHeader(http.StatusUnauthorized)
+		fmt.Fprintf(w, `{"message":"Unauthencticated"}`)
+		return
+	}
+	err := json.Unmarshal([]byte(headerUserData), &userData)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	log.Println(userData)
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, `{"message":"Hello World"}`)
+}
 func factoryUserController(repo iRepo) userController {
 	if controller == (userController{}) {
 		controller = userController{

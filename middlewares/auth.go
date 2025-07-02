@@ -3,6 +3,7 @@ package middlewares
 import (
 	"digishop/configs"
 	"digishop/utilities"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -107,6 +108,9 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			}
 			w.Header().Set("XRF-TOKEN", strToken)
 		}
+		w.Header().Set("XRF-TOKEN", token1)
+		strDecryptedClaims, _ := json.Marshal(decryptedClaims)
+		r.Header.Set("X-USER-DATA", string(strDecryptedClaims))
 		next.ServeHTTP(w, r)
 	})
 }
