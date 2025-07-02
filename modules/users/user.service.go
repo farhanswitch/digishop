@@ -86,7 +86,7 @@ func (u userService) LoginUser(param LoginUserRequest) (custom_errors.CustomErro
 		"username": loginData.Username,
 		"id":       loginData.ID,
 		"Issuer":   "Digishop",
-		"Expiry":   jwt.NewNumericDate(time.Now().Add(1 * time.Hour)),
+		"Expiry":   jwt.NewNumericDate(time.Now().Add(time.Duration(configs.GetConfig().Service.SessionTime) * time.Second)),
 		"IssuedAt": jwt.NewNumericDate(time.Now()),
 	}
 	strToken, err := utilities.JWEEncryptAES(claims, []byte(configs.GetConfig().Service.EncryptKey))
@@ -142,10 +142,10 @@ func (u userService) CheckAuthentication(token string) (string, custom_errors.Cu
 	}
 	token1, err := utilities.RedisInstance().GetValue(fmt.Sprintf("TOKEN_%s_1", username))
 	if err != nil {
-		log.Println(err)
 		if err.Error() == "redis: nil" {
 			token1 = ""
 		} else {
+			log.Println(err)
 
 			return "", custom_errors.CustomError{
 				Code:          http.StatusUnauthorized,
@@ -156,10 +156,10 @@ func (u userService) CheckAuthentication(token string) (string, custom_errors.Cu
 	}
 	token2, err := utilities.RedisInstance().GetValue(fmt.Sprintf("TOKEN_%s_2", username))
 	if err != nil {
-		log.Println(err)
 		if err.Error() == "redis: nil" {
 			token2 = ""
 		} else {
+			log.Println(err)
 
 			return "", custom_errors.CustomError{
 				Code:          http.StatusUnauthorized,
@@ -174,6 +174,47 @@ func (u userService) CheckAuthentication(token string) (string, custom_errors.Cu
 			Message:       "Token missmatch with token saved in Redis",
 			MessageToSend: "Unauthencticated",
 		}
+	}
+	floatExpireTime := decryptedClaims["Expiry"].(float64)
+	intExpireTime := int64(floatExpireTime)
+
+	formattedExpiryTime := time.Unix(intExpireTime, 0)
+	currentTime := time.Now()
+	remainingTime := formattedExpiryTime.Sub(currentTime).Seconds()
+	// Check if the remaining time is less than or equal to refresh session and the token2 is not set
+	if uint16(remainingTime) <= configs.GetConfig().Service.RefreshTime && token2 == "" {
+		claims := map[string]interface{}{
+			"username": decryptedClaims["username"],
+			"id":       decryptedClaims["id"],
+			"Issuer":   "Digishop",
+			"Expiry":   jwt.NewNumericDate(time.Now().Add(time.Duration(configs.GetConfig().Service.SessionTime) * time.Second)),
+			"IssuedAt": jwt.NewNumericDate(time.Now()),
+		}
+		strToken, err := utilities.JWEEncryptAES(claims, []byte(configs.GetConfig().Service.EncryptKey))
+		if err != nil {
+			log.Println("Failed to refresh token")
+			log.Println(err)
+			return token1, custom_errors.CustomError{}
+		}
+		err = utilities.RedisInstance().SaveValue(fmt.Sprintf("TOKEN_%s_2", username), token1, time.Duration(configs.GetConfig().Service.RefreshTime)*time.Second)
+		if err != nil {
+			log.Println(err)
+			return "", custom_errors.CustomError{
+				Code:          http.StatusUnauthorized,
+				Message:       err.Error(),
+				MessageToSend: "Unauthencticated",
+			}
+		}
+		err = utilities.RedisInstance().SaveValue(fmt.Sprintf("TOKEN_%s_1", username), strToken, time.Duration(configs.GetConfig().Service.SessionTime)*time.Second)
+		if err != nil {
+			log.Println(err)
+			return "", custom_errors.CustomError{
+				Code:          http.StatusUnauthorized,
+				Message:       err.Error(),
+				MessageToSend: "Unauthencticated",
+			}
+		}
+		token1 = strToken
 	}
 	return token1, custom_errors.CustomError{}
 }

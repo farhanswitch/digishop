@@ -25,6 +25,7 @@ type redisConfig struct {
 type serviceConfig struct {
 	Port          uint16
 	SessionTime   uint16
+	RefreshTime   uint16
 	EncryptKey    string
 	PublicKeyRSA  *rsa.PublicKey
 	PrivateKeyRSA *rsa.PrivateKey
@@ -65,6 +66,10 @@ func GetConfig() appConfig {
 		if err != nil {
 			log.Fatalf("Invalid Session Time: %s\n", err.Error())
 		}
+		refreshTime, err := strconv.Atoi(os.Getenv("REFRESH_TIME"))
+		if err != nil {
+			log.Fatalf("Invalid Refresh Time: %s\n", err.Error())
+		}
 		redisPort, err := strconv.Atoi(os.Getenv("REDIS_PORT"))
 		if err != nil {
 			log.Fatalf("Invalid Redis Port: %s\n", err.Error())
@@ -99,6 +104,7 @@ func GetConfig() appConfig {
 		var serviceConf serviceConfig = serviceConfig{
 			Port:          uint16(appPort),
 			SessionTime:   uint16(sessionTime),
+			RefreshTime:   uint16(refreshTime),
 			EncryptKey:    os.Getenv("ENCRYPT_KEY"),
 			PublicKeyRSA:  rsaPub,
 			PrivateKeyRSA: privateKey,
