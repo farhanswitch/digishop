@@ -125,7 +125,7 @@ func (u userController) TestCtrl(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Println(userData)
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, `{"message":"Hello World"}`)
+	fmt.Fprintf(w, `{"message":"Hello World","username":"%s", "id":"%s"}`, userData["username"], userData["id"])
 }
 func factoryUserController(repo iRepo) userController {
 	if controller == (userController{}) {
