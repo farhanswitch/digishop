@@ -9,5 +9,6 @@ import (
 func InitModule(router *chi.Mux) {
 	controller := factoryFileController()
 	router.With(middlewares.AuthMiddleware).Post("/file/product-photo/upload", controller.UploadFileCtrl)
+	router.Get("/file/{filename}", controller.GetFileCtrl)
 
 }

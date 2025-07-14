@@ -4,8 +4,13 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"mime"
 	"net/http"
 	"os"
+	"path/filepath"
+	"strings"
+
+	"github.com/go-chi/chi/v5"
 )
 
 type fileController struct {
@@ -47,7 +52,38 @@ func (f fileController) UploadFileCtrl(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, `{"message":"File uploaded successfully"}`)
 }
+func (f fileController) GetFileCtrl(w http.ResponseWriter, r *http.Request) {
+	filename := chi.URLParam(r, "filename")
+	if strings.Contains(filename, "..") {
+		http.Error(w, "Invalid filename", http.StatusBadRequest)
+		return
+	}
 
+	// Path ke folder uploads di root project
+	filePath := filepath.Join(".", "uploads", filename)
+
+	// Buka file
+	file, err := os.Open(filePath)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+	defer file.Close()
+
+	// Dapatkan MIME type berdasarkan ekstensi
+	ext := filepath.Ext(filePath)
+	mimeType := mime.TypeByExtension(ext)
+	if mimeType == "" {
+		mimeType = "application/octet-stream"
+	}
+
+	// Set header
+	w.Header().Set("Content-Type", mimeType)
+	w.Header().Set("Content-Disposition", "inline; filename=\""+filename+"\"")
+
+	// Kirim file
+	http.ServeFile(w, r, filePath)
+}
 func factoryFileController() fileController {
 	if controller == (fileController{}) {
 		controller = fileController{}
