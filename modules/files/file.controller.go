@@ -19,6 +19,7 @@ import (
 )
 
 type fileController struct {
+	repo fileRepo
 }
 
 var controller fileController
@@ -41,9 +42,6 @@ func (f fileController) UploadFileCtrl(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, `{"errors":"File size is too large"}`)
 		return
 	}
-	log.Printf("Uploaded File: %+v\n", handler.Filename)
-	log.Printf("File Size: %+v\n", handler.Size)
-	log.Printf("MIME Header: %+v\n", handler.Header)
 	var listValidMimeType []string = []string{"image/png", "image/jpeg", "image/jpg", "image/webp", "application/octet-stream"}
 	fileContentType := handler.Header.Get("Content-Type")
 	var isValidMimeType bool = false
@@ -70,13 +68,14 @@ func (f fileController) UploadFileCtrl(w http.ResponseWriter, r *http.Request) {
 	}
 	var newFileName string = strUUID.String() + fileExtension
 	var fileNamePatternToSave string = "uploads/" + fmt.Sprintf("%d", time.Now().Unix()) + "--" + strUUID.String() + fileExtension
-	var dataToSave map[string]interface{} = map[string]interface{}{
-		"file_name":          newFileName,
-		"file_extension":     fileExtension,
-		"original_file_name": handler.Filename,
-		"content_type":       fileContentType,
+	var dataToSave fileData = fileData{
+		ID:               strUUID.String(),
+		FileName:         newFileName,
+		OriginalFileName: handler.Filename,
+		FileExt:          fileExtension,
+		FileMimeType:     fileContentType,
+		FilePath:         fileNamePatternToSave,
 	}
-	log.Println(dataToSave, time.Now().Unix())
 
 	tempFile, err := os.Create(fileNamePatternToSave)
 	if err != nil {
@@ -86,6 +85,14 @@ func (f fileController) UploadFileCtrl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer tempFile.Close()
+	isError, customErr := f.repo.CreateFile(dataToSave)
+	if isError {
+		log.Println(customErr.Message)
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, `{"error":"%s"}`, customErr.Message)
+		return
+	}
+
 	fileBytes, err := io.ReadAll(file)
 	if err != nil {
 		log.Println(err)
@@ -95,7 +102,7 @@ func (f fileController) UploadFileCtrl(w http.ResponseWriter, r *http.Request) {
 	}
 	tempFile.Write(fileBytes)
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, `{"message":"File uploaded successfully"}`)
+	fmt.Fprintf(w, `{"message":"File uploaded successfully", "id":"%s","fileName":"%s"}`, strUUID.String(), dataToSave.FileName)
 }
 func (f fileController) GetFileCtrl(w http.ResponseWriter, r *http.Request) {
 	filename := chi.URLParam(r, "filename")
@@ -129,9 +136,11 @@ func (f fileController) GetFileCtrl(w http.ResponseWriter, r *http.Request) {
 	// Kirim file
 	http.ServeFile(w, r, filePath)
 }
-func factoryFileController() fileController {
+func factoryFileController(repo fileRepo) fileController {
 	if controller == (fileController{}) {
-		controller = fileController{}
+		controller = fileController{
+			repo: repo,
+		}
 	}
 	return controller
 }
