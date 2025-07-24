@@ -13,10 +13,10 @@ var repo userRepo
 func (u userRepo) RegisterUser(user RegisterUserRequest) (bool, custom_errors.CustomError) {
 	_, err := connections.DbMySQL().Query("CALL create_user(?,?,?,?,?,?,?,?)", user.ID, user.Username, user.FirstName, user.LastName, user.Email, user.Password, user.PhoneNumber, user.UserType)
 	if err != nil {
-		if err.Error() == "Error 1644 (45000): Email already registered." {
+		if err.Error() == "Error 1644 (45000): User already registered." {
 			customErr := custom_errors.CustomError{
 				Code:          http.StatusUnprocessableEntity,
-				MessageToSend: "Email already registered. Please login",
+				MessageToSend: "User with same email/username already registered. Please login",
 				Message:       err.Error(),
 			}
 			return true, customErr

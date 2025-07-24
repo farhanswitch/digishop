@@ -30,9 +30,34 @@ func (u userService) RegisterUser(user RegisterUserRequest) (bool, custom_errors
 			MessageToSend: "Internal Server Error",
 		}
 	}
+	decryptedPassword, err := utilities.DecryptRSA(user.Password)
+	if err != nil {
+		log.Println(err)
+		return true, custom_errors.CustomError{
+			Code:          500,
+			Message:       err.Error(),
+			MessageToSend: "Internal Server Error",
+		}
+	}
+	decryptedConfirmPassword, err := utilities.DecryptRSA(user.ConfirmPassword)
+	if err != nil {
+		log.Println(err)
+		return true, custom_errors.CustomError{
+			Code:          500,
+			Message:       err.Error(),
+			MessageToSend: "Internal Server Error",
+		}
+	}
+	if string(decryptedConfirmPassword) != string(decryptedPassword) {
 
+		return true, custom_errors.CustomError{
+			Code:          400,
+			Message:       "Password and Confirm Password must match!",
+			MessageToSend: "Password and Confirm Password must match!",
+		}
+	}
 	// Hash the password
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(decryptedPassword), bcrypt.DefaultCost)
 	if err != nil {
 		log.Println(err)
 		return true, custom_errors.CustomError{
