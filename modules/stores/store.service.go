@@ -37,6 +37,9 @@ func (s storeService) RegisterStoreSrv(store storeData) (bool, custom_errors.Cus
 	store.ID = strUUID.String()
 	return s.repo.RegisterStore(store)
 }
+func (s storeService) GetStoreByUserIDSrv(userID string) (storeData, custom_errors.CustomError) {
+	return s.repo.GetStoreByUserID(userID)
+}
 
 func factoryStoreService(repo iRepo) storeService {
 	if service == (storeService{}) {
