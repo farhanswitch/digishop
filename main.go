@@ -8,6 +8,7 @@ import (
 	"digishop/configs"
 	"digishop/connections"
 	"digishop/modules/files"
+	"digishop/modules/stores"
 	"digishop/modules/users"
 
 	chi "github.com/go-chi/chi/v5"
@@ -40,6 +41,7 @@ func initModules() {
 func internalModules(router *chi.Mux) {
 	users.InitModule(router)
 	files.InitModule(router)
+	stores.InitModule(router)
 }
 func initPlugins(router *chi.Mux) {
 	router.Use(middleware.Recoverer)

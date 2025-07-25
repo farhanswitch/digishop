@@ -1,0 +1,9 @@
+### Register Store
+POST http://localhost:4777/store 
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJBMjU2R0NNS1ciLCJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiaXYiOiI2aHRHa21reDJDcFQ0MmQ3IiwidGFnIjoiQkNEdVEweWJzQ2Z2MTJ3bnh6ZThUUSJ9.CpaOAOZG6eXxYZ8MRQ7MWOXkDiCMhtTIKKsOUegbSkk.NVjOX-kJz8BgOd98.beUJC7nQiPrzkZlQAaWDpYfcavCGtpNU6mm4-Zpgli49fYlCddade1PxO1-5tqOi5PXRntRt3f7n_OEqaA5xKztGbmiSsOcProHxEfT507u3El-BIxtU7ANsIjXE2QDS0DpZhZQGV2Us9vajoKZtKq0wuESx2qJGbLXBfNB0v-dnZp7I.XHUQvAlinkMzlD7TtCpx5A
+
+{
+  "name": "Planet Sepatu",
+  "address": "Bekasi"
+}
