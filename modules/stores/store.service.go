@@ -40,7 +40,9 @@ func (s storeService) RegisterStoreSrv(store storeData) (bool, custom_errors.Cus
 func (s storeService) GetStoreByUserIDSrv(userID string) (storeData, custom_errors.CustomError) {
 	return s.repo.GetStoreByUserID(userID)
 }
-
+func (s storeService) UpdateStoreSrv(store storeData) (bool, custom_errors.CustomError) {
+	return s.repo.UpdateStore(store)
+}
 func factoryStoreService(repo iRepo) storeService {
 	if service == (storeService{}) {
 		service = storeService{

@@ -12,4 +12,5 @@ type storeData struct {
 type iRepo interface {
 	RegisterStore(store storeData) (bool, custom_errors.CustomError)
 	GetStoreByUserID(id string) (storeData, custom_errors.CustomError)
+	UpdateStore(store storeData) (bool, custom_errors.CustomError)
 }

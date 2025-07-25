@@ -22,7 +22,18 @@ func (s storeRepo) RegisterStore(store storeData) (bool, custom_errors.CustomErr
 	}
 	return false, custom_errors.CustomError{}
 }
-
+func (s storeRepo) UpdateStore(store storeData) (bool, custom_errors.CustomError) {
+	_, err := connections.DbMySQL().Exec("UPDATE stores SET name = ?, address = ? WHERE user_id = ?", store.Name, store.Address, store.UserID)
+	if err != nil {
+		customErr := custom_errors.CustomError{
+			Code:          http.StatusInternalServerError,
+			MessageToSend: "Internal Server Error",
+			Message:       err.Error(),
+		}
+		return true, customErr
+	}
+	return false, custom_errors.CustomError{}
+}
 func (s storeRepo) GetStoreByUserID(userID string) (storeData, custom_errors.CustomError) {
 	var store storeData
 	err := connections.DbMySQL().QueryRow("SELECT id, name, address, user_id FROM stores WHERE user_id = ?", userID).Scan(&store.ID, &store.Name, &store.Address, &store.UserID)
