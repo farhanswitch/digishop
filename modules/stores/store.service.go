@@ -52,7 +52,7 @@ func (s storeService) CreateNewProductSrv(product productRequest) (bool, custom_
 			MessageToSend: "Invalid Category ID",
 		}
 	}
-	storeData, customErr := s.repo.GetStoreByUserID(product.UserID)
+	store, customErr := s.repo.GetStoreByUserID(product.UserID)
 	if customErr != (custom_errors.CustomError{}) {
 		return true, custom_errors.CustomError{
 			Code:          400,
@@ -60,7 +60,7 @@ func (s storeService) CreateNewProductSrv(product productRequest) (bool, custom_
 			MessageToSend: "You have no store",
 		}
 	}
-	product.StoreID = storeData.ID
+	product.StoreID = store.ID
 	_, err = s.repo.GetProductImagePathByID(product.ImageID)
 	if err != nil {
 		return true, custom_errors.CustomError{
