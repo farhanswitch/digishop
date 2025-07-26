@@ -8,19 +8,26 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"slices"
+	"time"
+
 	"strings"
+
+	"github.com/google/uuid"
 
 	"github.com/go-chi/chi/v5"
 )
 
 type fileController struct {
+	repo fileRepo
 }
 
 var controller fileController
 
 func (f fileController) UploadFileCtrl(w http.ResponseWriter, r *http.Request) {
+	validMaxSize := 8 << 20
 	w.Header().Set("Content-Type", "application/json")
-	r.ParseMultipartForm(10 << 20)
+	r.ParseMultipartForm(8 << 20)
 	file, handler, err := r.FormFile("file")
 	if err != nil {
 		log.Println("Error Retrieving the File")
@@ -30,10 +37,47 @@ func (f fileController) UploadFileCtrl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer file.Close()
-	log.Printf("Uploaded File: %+v\n", handler.Filename)
-	log.Printf("File Size: %+v\n", handler.Size)
-	log.Printf("MIME Header: %+v\n", handler.Header)
-	tempFile, err := os.CreateTemp("uploads", "upload-*.png")
+	if handler.Size > int64(validMaxSize) {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, `{"errors":"File size is too large"}`)
+		return
+	}
+	var listValidMimeType []string = []string{"image/png", "image/jpeg", "image/jpg", "image/webp", "application/octet-stream"}
+	fileContentType := handler.Header.Get("Content-Type")
+	var isValidMimeType bool = false
+	if slices.Contains(listValidMimeType, string(fileContentType)) {
+		isValidMimeType = true
+	}
+	if !isValidMimeType {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, `{"errors":"Invalid file type"}`)
+		return
+	}
+	var fileExtension string = filepath.Ext(handler.Filename)
+	if fileExtension == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, `{"errors":"Invalid file type"}`)
+		return
+	}
+	strUUID, err := uuid.NewV7()
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, `{"error":"%s"}`, err.Error())
+		return
+	}
+	var newFileName string = strUUID.String() + fileExtension
+	var fileNamePatternToSave string = "uploads/" + fmt.Sprintf("%d", time.Now().Unix()) + "--" + strUUID.String() + fileExtension
+	var dataToSave fileData = fileData{
+		ID:               strUUID.String(),
+		FileName:         newFileName,
+		OriginalFileName: handler.Filename,
+		FileExt:          fileExtension,
+		FileMimeType:     fileContentType,
+		FilePath:         fileNamePatternToSave,
+	}
+
+	tempFile, err := os.Create(fileNamePatternToSave)
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusBadRequest)
@@ -41,6 +85,14 @@ func (f fileController) UploadFileCtrl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer tempFile.Close()
+	isError, customErr := f.repo.CreateFile(dataToSave)
+	if isError {
+		log.Println(customErr.Message)
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, `{"error":"%s"}`, customErr.Message)
+		return
+	}
+
 	fileBytes, err := io.ReadAll(file)
 	if err != nil {
 		log.Println(err)
@@ -50,7 +102,7 @@ func (f fileController) UploadFileCtrl(w http.ResponseWriter, r *http.Request) {
 	}
 	tempFile.Write(fileBytes)
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, `{"message":"File uploaded successfully"}`)
+	fmt.Fprintf(w, `{"message":"File uploaded successfully", "id":"%s","fileName":"%s"}`, strUUID.String(), dataToSave.FileName)
 }
 func (f fileController) GetFileCtrl(w http.ResponseWriter, r *http.Request) {
 	filename := chi.URLParam(r, "filename")
@@ -84,9 +136,11 @@ func (f fileController) GetFileCtrl(w http.ResponseWriter, r *http.Request) {
 	// Kirim file
 	http.ServeFile(w, r, filePath)
 }
-func factoryFileController() fileController {
+func factoryFileController(repo fileRepo) fileController {
 	if controller == (fileController{}) {
-		controller = fileController{}
+		controller = fileController{
+			repo: repo,
+		}
 	}
 	return controller
 }

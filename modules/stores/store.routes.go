@@ -1,0 +1,17 @@
+package stores
+
+import (
+	"digishop/middlewares"
+
+	"github.com/go-chi/chi/v5"
+)
+
+func InitModule(router *chi.Mux) {
+	repo := factoryStoreRepo()
+	controller := factoryStoreController(repo)
+
+	router.With(middlewares.AuthMiddleware).Get("/store", controller.getStoreByUserIDCtrl)
+	router.With(middlewares.AuthMiddleware).Post("/store/product", controller.createNewProductCtrl)
+	router.With(middlewares.AuthMiddleware).Put("/store", controller.updateStoreCtrl)
+	router.With(middlewares.AuthMiddleware).Post("/store", controller.registerStoreCtrl)
+}

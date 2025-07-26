@@ -1,0 +1,80 @@
+package stores
+
+import (
+	"digishop/connections"
+	custom_errors "digishop/utilities/errors"
+	"log"
+	"net/http"
+)
+
+type storeRepo struct{}
+
+var repo storeRepo
+
+func (s storeRepo) RegisterStore(store storeData) (bool, custom_errors.CustomError) {
+	_, err := connections.DbMySQL().Exec("INSERT INTO stores(id, name, address, user_id) VALUES(?,?,?,?)", store.ID, store.Name, store.Address, store.UserID)
+	if err != nil {
+		customErr := custom_errors.CustomError{
+			Code:          http.StatusInternalServerError,
+			MessageToSend: "Internal Server Error",
+			Message:       err.Error(),
+		}
+		return true, customErr
+	}
+	return false, custom_errors.CustomError{}
+}
+func (s storeRepo) UpdateStore(store storeData) (bool, custom_errors.CustomError) {
+	_, err := connections.DbMySQL().Exec("UPDATE stores SET name = ?, address = ? WHERE user_id = ?", store.Name, store.Address, store.UserID)
+	if err != nil {
+		customErr := custom_errors.CustomError{
+			Code:          http.StatusInternalServerError,
+			MessageToSend: "Internal Server Error",
+			Message:       err.Error(),
+		}
+		return true, customErr
+	}
+	return false, custom_errors.CustomError{}
+}
+func (s storeRepo) GetStoreByUserID(userID string) (storeData, custom_errors.CustomError) {
+	var store storeData
+	err := connections.DbMySQL().QueryRow("SELECT id, name, address, user_id FROM stores WHERE user_id = ?", userID).Scan(&store.ID, &store.Name, &store.Address, &store.UserID)
+	if err != nil && err.Error() != "sql: no rows in result set" {
+		customErr := custom_errors.CustomError{
+			Code:          http.StatusInternalServerError,
+			MessageToSend: "Internal Server Error",
+			Message:       err.Error(),
+		}
+		return storeData{}, customErr
+	}
+	return store, custom_errors.CustomError{}
+}
+func (s storeRepo) GetCategoryNameByID(id string) (string, error) {
+	var category string
+	err := connections.DbMySQL().QueryRow("SELECT name FROM categories WHERE id = ? LIMIT 1", id).Scan(&category)
+	return category, err
+}
+
+func (s storeRepo) GetProductImagePathByID(id string) (string, error) {
+	var path string
+	err := connections.DbMySQL().QueryRow("SELECT path FROM files WHERE id = ? LIMIT 1", id).Scan(&path)
+	return path, err
+}
+func (s storeRepo) CreateNewProduct(product productRequest) (bool, custom_errors.CustomError) {
+	log.Println(product.CategoryID)
+	_, err := connections.DbMySQL().Exec("INSERT INTO products(id, category_id, store_id, image_id, name, description, price, amount) VALUES(?,?,?,?,?,?,?,?)", product.ID, product.CategoryID, product.StoreID, product.ImageID, product.Name, product.Description, product.Price, product.Amount)
+	if err != nil {
+		customErr := custom_errors.CustomError{
+			Code:          http.StatusInternalServerError,
+			MessageToSend: "Internal Server Error",
+			Message:       err.Error(),
+		}
+		return true, customErr
+	}
+	return false, custom_errors.CustomError{}
+}
+func factoryStoreRepo() iRepo {
+	if repo == (storeRepo{}) {
+		repo = storeRepo{}
+	}
+	return repo
+}

@@ -1,0 +1,34 @@
+### Register Store
+POST http://localhost:4777/store 
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJBMjU2R0NNS1ciLCJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiaXYiOiJtZTdsMUJzdGxUbnNXYWRCIiwidGFnIjoid2ttMnRpZ3p5RVh5T3Z0WnktbTBWZyJ9.5w2ijjITuHNhJ_ekcsdPGMft-PZ2NMhpEDLYFdmz5lo.CRa5w5spEw3VWEXA.lrVtDU5vVegLfUz90vAjFDoJ2haxw8H91kYvuAXjHvq2mQjd15dnkfBvckrZ7_5nlV0ZVtT6JXm3VojQJw3tPSsQXU8Fk64PenlWkbI4W0JpSgLFkfYUj-72Vcy4vIlXf9X_jBIP3tsRzwO_fARzs_XONrf0zBAXe_IkLxl1wDvRx0IR.7fU-IH_RFBcVlDgPtgtAhA
+
+{
+  "name": "Planet Sepatu",
+  "address": "Bekasi"
+}
+### Update Store
+PUT http://localhost:4777/store 
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJBMjU2R0NNS1ciLCJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiaXYiOiJtZTdsMUJzdGxUbnNXYWRCIiwidGFnIjoid2ttMnRpZ3p5RVh5T3Z0WnktbTBWZyJ9.5w2ijjITuHNhJ_ekcsdPGMft-PZ2NMhpEDLYFdmz5lo.CRa5w5spEw3VWEXA.lrVtDU5vVegLfUz90vAjFDoJ2haxw8H91kYvuAXjHvq2mQjd15dnkfBvckrZ7_5nlV0ZVtT6JXm3VojQJw3tPSsQXU8Fk64PenlWkbI4W0JpSgLFkfYUj-72Vcy4vIlXf9X_jBIP3tsRzwO_fARzs_XONrf0zBAXe_IkLxl1wDvRx0IR.7fU-IH_RFBcVlDgPtgtAhA
+
+{
+  "name": "Planet Sepatu",
+  "address": "Kota Bekasi"
+}
+### Get User's Store
+GET http://localhost:4777/store 
+Authorization: Bearer eyJhbGciOiJBMjU2R0NNS1ciLCJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiaXYiOiJtZTdsMUJzdGxUbnNXYWRCIiwidGFnIjoid2ttMnRpZ3p5RVh5T3Z0WnktbTBWZyJ9.5w2ijjITuHNhJ_ekcsdPGMft-PZ2NMhpEDLYFdmz5lo.CRa5w5spEw3VWEXA.lrVtDU5vVegLfUz90vAjFDoJ2haxw8H91kYvuAXjHvq2mQjd15dnkfBvckrZ7_5nlV0ZVtT6JXm3VojQJw3tPSsQXU8Fk64PenlWkbI4W0JpSgLFkfYUj-72Vcy4vIlXf9X_jBIP3tsRzwO_fARzs_XONrf0zBAXe_IkLxl1wDvRx0IR.7fU-IH_RFBcVlDgPtgtAhA
+### Create New Product
+POST http://localhost:4777/store/product
+Authorization: Bearer eyJhbGciOiJBMjU2R0NNS1ciLCJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiaXYiOiJtZTdsMUJzdGxUbnNXYWRCIiwidGFnIjoid2ttMnRpZ3p5RVh5T3Z0WnktbTBWZyJ9.5w2ijjITuHNhJ_ekcsdPGMft-PZ2NMhpEDLYFdmz5lo.CRa5w5spEw3VWEXA.lrVtDU5vVegLfUz90vAjFDoJ2haxw8H91kYvuAXjHvq2mQjd15dnkfBvckrZ7_5nlV0ZVtT6JXm3VojQJw3tPSsQXU8Fk64PenlWkbI4W0JpSgLFkfYUj-72Vcy4vIlXf9X_jBIP3tsRzwO_fARzs_XONrf0zBAXe_IkLxl1wDvRx0IR.7fU-IH_RFBcVlDgPtgtAhA
+Connection: application/json
+
+{
+  "categoryID": "01983bcf-674f-727f-8ba9-86d2847afa86",
+  "imageID": "01983ac0-099e-7816-be81-63be2e853502",
+  "name": "Kopi Bubuk",
+  "description": "Kopi bubuk dari Indonesia",
+  "price": 10000.500,
+  "amount": 50
+}
