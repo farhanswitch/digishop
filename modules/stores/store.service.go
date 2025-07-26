@@ -141,6 +141,9 @@ func (s storeService) GetListProductSrv(param getListProductRequest) ([]getListP
 	param.Offset = (param.PaginationPage - 1) * param.PaginationRows
 	return s.repo.GetListProduct(param)
 }
+func (s storeService) GetProductDetailSrv(id string) (productDetails, custom_errors.CustomError) {
+	return s.repo.GetDetailProduct(id)
+}
 func factoryStoreService(repo iRepo) storeService {
 	if service == (storeService{}) {
 		service = storeService{

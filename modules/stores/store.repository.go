@@ -105,6 +105,28 @@ func (s storeRepo) GetListProduct(param getListProductRequest) ([]getListProduct
 	}
 	return products, custom_errors.CustomError{}
 }
+func (s storeRepo) GetDetailProduct(id string) (productDetails, custom_errors.CustomError) {
+	var product productDetails
+	err := connections.DbMySQL().QueryRow("SELECT p.id, p.name, p.description, p.category_id, p.price, p.amount, p.image_id, f.filename FROM products p JOIN files f ON p.image_id = f.id  WHERE p.id = ? LIMIT 1", id).Scan(&product.ID, &product.Name, &product.Description, &product.CategoryID, &product.Price, &product.Amount, &product.ImageID, &product.ImagePath)
+	if err != nil {
+		if err.Error() == "sql: no rows in result set" {
+			customErr := custom_errors.CustomError{
+				Code:          http.StatusNotFound,
+				MessageToSend: "Product not found",
+				Message:       err.Error(),
+			}
+			return productDetails{}, customErr
+		}
+		customErr := custom_errors.CustomError{
+			Code:          http.StatusInternalServerError,
+			MessageToSend: "Internal Server Error",
+			Message:       err.Error(),
+		}
+		return productDetails{}, customErr
+	}
+	return product, custom_errors.CustomError{}
+}
+
 func factoryStoreRepo() iRepo {
 	if repo == (storeRepo{}) {
 		repo = storeRepo{}

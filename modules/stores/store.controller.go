@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -272,6 +273,31 @@ func (s storeController) getListProductCtrl(w http.ResponseWriter, r *http.Reque
 		return
 	}
 	data, customErr := s.service.GetListProductSrv(param)
+	if customErr != (custom_errors.CustomError{}) {
+		log.Println(customErr)
+		w.WriteHeader(int(customErr.Code))
+		fmt.Fprintf(w, `{"errors":"%s"}`, customErr.MessageToSend)
+		return
+	}
+	strData, err := json.Marshal(data)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, `{"errors":"%s"}`, "Internal server error")
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, `{"data":%s}`, strData)
+}
+func (s storeController) getDetailProductCtrl(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, `{"errors":"ID is required"}`)
+		return
+	}
+	data, customErr := s.service.GetProductDetailSrv(id)
 	if customErr != (custom_errors.CustomError{}) {
 		log.Println(customErr)
 		w.WriteHeader(int(customErr.Code))

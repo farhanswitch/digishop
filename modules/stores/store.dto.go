@@ -53,6 +53,16 @@ type getListProductResponse struct {
 	ImagePath    string  `json:"imagePath"`
 	StoreName    string  `json:"storeName"`
 }
+type productDetails struct {
+	ID          string  `json:"id"`
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	CategoryID  string  `json:"categoryID"`
+	Price       float64 `json:"price"`
+	Amount      int     `json:"amount"`
+	ImageID     string  `json:"imageID"`
+	ImagePath   string  `json:"imagePath"`
+}
 type iRepo interface {
 	RegisterStore(store storeData) (bool, custom_errors.CustomError)
 	GetStoreByUserID(id string) (storeData, custom_errors.CustomError)
@@ -63,4 +73,5 @@ type iRepo interface {
 	CheckIsValidUserProduct(userID string, productID string) error
 	UpdateProducts(product updateProductRequest) (bool, custom_errors.CustomError)
 	GetListProduct(param getListProductRequest) ([]getListProductResponse, custom_errors.CustomError)
+	GetDetailProduct(id string) (productDetails, custom_errors.CustomError)
 }

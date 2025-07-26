@@ -10,6 +10,7 @@ func InitModule(router *chi.Mux) {
 	repo := factoryStoreRepo()
 	controller := factoryStoreController(repo)
 
+	router.With(middlewares.AuthMiddleware).Get("/store/product/{id}", controller.getDetailProductCtrl)
 	router.With(middlewares.AuthMiddleware).Get("/store/products", controller.getListProductCtrl)
 	router.With(middlewares.AuthMiddleware).Get("/store", controller.getStoreByUserIDCtrl)
 	router.With(middlewares.AuthMiddleware).Post("/store/product", controller.createNewProductCtrl)
