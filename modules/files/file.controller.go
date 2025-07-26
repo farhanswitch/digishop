@@ -33,7 +33,7 @@ func (f fileController) UploadFileCtrl(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error Retrieving the File")
 		log.Println(err)
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, `{"error":"%s"}`, err.Error())
+		fmt.Fprintf(w, `{"errors":"%s"}`, err.Error())
 		return
 	}
 	defer file.Close()
@@ -63,7 +63,7 @@ func (f fileController) UploadFileCtrl(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, `{"error":"%s"}`, err.Error())
+		fmt.Fprintf(w, `{"errors":"%s"}`, err.Error())
 		return
 	}
 	var newFileName string = strUUID.String() + fileExtension
@@ -81,7 +81,7 @@ func (f fileController) UploadFileCtrl(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, `{"error":"%s"}`, err.Error())
+		fmt.Fprintf(w, `{"errors:"%s"}`, err.Error())
 		return
 	}
 	defer tempFile.Close()
@@ -89,7 +89,7 @@ func (f fileController) UploadFileCtrl(w http.ResponseWriter, r *http.Request) {
 	if isError {
 		log.Println(customErr.Message)
 		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(w, `{"error":"%s"}`, customErr.Message)
+		fmt.Fprintf(w, `{"errors":"%s"}`, customErr.Message)
 		return
 	}
 
@@ -97,7 +97,7 @@ func (f fileController) UploadFileCtrl(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, `{"error":"%s"}`, err.Error())
+		fmt.Fprintf(w, `{"errors":"%s"}`, err.Error())
 		return
 	}
 	tempFile.Write(fileBytes)

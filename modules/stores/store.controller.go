@@ -22,7 +22,7 @@ func (s storeController) registerStoreCtrl(w http.ResponseWriter, r *http.Reques
 	headerUserData := r.Header.Get("X-User-Data")
 	if headerUserData == "" {
 		w.WriteHeader(http.StatusUnauthorized)
-		fmt.Fprintf(w, `{"message":"Unauthencticated"}`)
+		fmt.Fprintf(w, `{"errors":"Unauthencticated"}`)
 		return
 	}
 	err := json.Unmarshal([]byte(headerUserData), &userData)
@@ -67,7 +67,7 @@ func (s storeController) updateStoreCtrl(w http.ResponseWriter, r *http.Request)
 	headerUserData := r.Header.Get("X-User-Data")
 	if headerUserData == "" {
 		w.WriteHeader(http.StatusUnauthorized)
-		fmt.Fprintf(w, `{"message":"Unauthencticated"}`)
+		fmt.Fprintf(w, `{"errors":"Unauthencticated"}`)
 		return
 	}
 	err := json.Unmarshal([]byte(headerUserData), &userData)
@@ -112,7 +112,7 @@ func (s storeController) getStoreByUserIDCtrl(w http.ResponseWriter, r *http.Req
 	headerUserData := r.Header.Get("X-User-Data")
 	if headerUserData == "" {
 		w.WriteHeader(http.StatusUnauthorized)
-		fmt.Fprintf(w, `{"message":"Unauthencticated"}`)
+		fmt.Fprintf(w, `{"errors":"Unauthencticated"}`)
 		return
 	}
 	err := json.Unmarshal([]byte(headerUserData), &userData)
@@ -139,7 +139,7 @@ func (s storeController) createNewProductCtrl(w http.ResponseWriter, r *http.Req
 	headerUserData := r.Header.Get("X-User-Data")
 	if headerUserData == "" {
 		w.WriteHeader(http.StatusUnauthorized)
-		fmt.Fprintf(w, `{"message":"Unauthencticated"}`)
+		fmt.Fprintf(w, `{"errors":"Unauthencticated"}`)
 		return
 	}
 	err := json.Unmarshal([]byte(headerUserData), &userData)

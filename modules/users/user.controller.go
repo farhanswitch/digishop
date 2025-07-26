@@ -73,6 +73,7 @@ func (u userController) LoginUserCtrl(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, `{"errors":"invalid request data"}`)
 		return
 	}
 	val := validator.New()
@@ -89,14 +90,14 @@ func (u userController) LoginUserCtrl(w http.ResponseWriter, r *http.Request) {
 	if errObj.Code > 10 {
 		log.Println(errObj)
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, `{"message":"%s"}`, errObj.MessageToSend)
+		fmt.Fprintf(w, `{"errors":"%s"}`, errObj.MessageToSend)
 		return
 	}
 	strData, err := json.Marshal(data)
 	if err != nil {
 		log.Println(errObj)
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, `{"message":"%s"}`, err.Error())
+		fmt.Fprintf(w, `{"errors":"%s"}`, err.Error())
 		return
 	}
 	w.WriteHeader(http.StatusOK)
@@ -108,20 +109,20 @@ func (u userController) CheckAuthenticationCtrl(w http.ResponseWriter, r *http.R
 	bearerToken := r.Header.Get("Authorization")
 	if bearerToken == "" {
 		w.WriteHeader(http.StatusUnauthorized)
-		fmt.Fprintf(w, `{"message":"Unauthencticated"}`)
+		fmt.Fprintf(w, `{"errors":"Unauthencticated"}`)
 		return
 	}
 	token := bearerToken[7:]
 	if token == "" {
 		w.WriteHeader(http.StatusUnauthorized)
-		fmt.Fprintf(w, `{"message":"Unauthencticated"}`)
+		fmt.Fprintf(w, `{"errors":"Unauthencticated"}`)
 		return
 	}
 	newToken, errObj := u.service.CheckAuthentication(token)
 	if errObj.Code > 10 {
 		log.Println(errObj)
 		w.WriteHeader(http.StatusUnauthorized)
-		fmt.Fprintf(w, `{"message":"%s"}`, errObj.MessageToSend)
+		fmt.Fprintf(w, `{"errors":"%s"}`, errObj.MessageToSend)
 		return
 	}
 	w.Header().Add("XRF-TOKEN", newToken)
@@ -134,7 +135,7 @@ func (u userController) TestCtrl(w http.ResponseWriter, r *http.Request) {
 	headerUserData := r.Header.Get("X-User-Data")
 	if headerUserData == "" {
 		w.WriteHeader(http.StatusUnauthorized)
-		fmt.Fprintf(w, `{"message":"Unauthencticated"}`)
+		fmt.Fprintf(w, `{"errors":"Unauthencticated"}`)
 		return
 	}
 	err := json.Unmarshal([]byte(headerUserData), &userData)
