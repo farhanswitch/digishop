@@ -126,6 +126,26 @@ func (s storeRepo) GetDetailProduct(id string) (productDetails, custom_errors.Cu
 	}
 	return product, custom_errors.CustomError{}
 }
+func (s storeRepo) DeleteStoreProduct(productID string, userID string) (bool, custom_errors.CustomError) {
+	_, err := connections.DbMySQL().Exec("CALL delete_store_product(?,?)", userID, productID)
+	if err != nil {
+		if err.Error() == "Error 1644 (45001): Product not found." {
+			customErr := custom_errors.CustomError{
+				Code:          http.StatusNotFound,
+				MessageToSend: "Product not found",
+				Message:       err.Error(),
+			}
+			return true, customErr
+		}
+		customErr := custom_errors.CustomError{
+			Code:          http.StatusInternalServerError,
+			MessageToSend: "Internal Server Error",
+			Message:       err.Error(),
+		}
+		return true, customErr
+	}
+	return false, custom_errors.CustomError{}
+}
 
 func factoryStoreRepo() iRepo {
 	if repo == (storeRepo{}) {

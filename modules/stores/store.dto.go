@@ -74,4 +74,5 @@ type iRepo interface {
 	UpdateProducts(product updateProductRequest) (bool, custom_errors.CustomError)
 	GetListProduct(param getListProductRequest) ([]getListProductResponse, custom_errors.CustomError)
 	GetDetailProduct(id string) (productDetails, custom_errors.CustomError)
+	DeleteStoreProduct(productID string, userID string) (bool, custom_errors.CustomError)
 }

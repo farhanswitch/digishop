@@ -14,7 +14,8 @@ func InitModule(router *chi.Mux) {
 	router.With(middlewares.AuthMiddleware).Get("/store/products", controller.getListProductCtrl)
 	router.With(middlewares.AuthMiddleware).Get("/store", controller.getStoreByUserIDCtrl)
 	router.With(middlewares.AuthMiddleware).Post("/store/product", controller.createNewProductCtrl)
+	router.With(middlewares.AuthMiddleware).Post("/store", controller.registerStoreCtrl)
 	router.With(middlewares.AuthMiddleware).Put("/store", controller.updateStoreCtrl)
 	router.With(middlewares.AuthMiddleware).Put("/store/product", controller.updateProductCtrl)
-	router.With(middlewares.AuthMiddleware).Post("/store", controller.registerStoreCtrl)
+	router.With(middlewares.AuthMiddleware).Delete("/store/product/{id}", controller.deleteStoreProductCtrl)
 }

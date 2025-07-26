@@ -314,6 +314,38 @@ func (s storeController) getDetailProductCtrl(w http.ResponseWriter, r *http.Req
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, `{"data":%s}`, strData)
 }
+func (s storeController) deleteStoreProductCtrl(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	var userData map[string]interface{}
+	headerUserData := r.Header.Get("X-User-Data")
+	if headerUserData == "" {
+		w.WriteHeader(http.StatusUnauthorized)
+		fmt.Fprintf(w, `{"errors":"Unauthencticated"}`)
+		return
+	}
+	err := json.Unmarshal([]byte(headerUserData), &userData)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, `{"errors":"Invalid sender data"}`)
+		return
+	}
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, `{"errors":"ID is required"}`)
+		return
+	}
+	isError, customErr := s.service.DeleteStoreProductSrv(id, userData["id"].(string))
+	if isError {
+		log.Println(customErr)
+		w.WriteHeader(int(customErr.Code))
+		fmt.Fprintf(w, `{"errors":"%s"}`, customErr.MessageToSend)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, `{"message":"Product deleted successfully"}`)
+}
 func factoryStoreController(repo iRepo) storeController {
 	if controller == (storeController{}) {
 		service := factoryStoreService(repo)

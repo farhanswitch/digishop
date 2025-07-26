@@ -46,6 +46,7 @@ func internalModules(router *chi.Mux) {
 func initPlugins(router *chi.Mux) {
 	router.Use(middleware.Recoverer)
 	// Middleware CORS
+
 	router.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},

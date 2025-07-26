@@ -144,6 +144,9 @@ func (s storeService) GetListProductSrv(param getListProductRequest) ([]getListP
 func (s storeService) GetProductDetailSrv(id string) (productDetails, custom_errors.CustomError) {
 	return s.repo.GetDetailProduct(id)
 }
+func (s storeService) DeleteStoreProductSrv(productID string, userID string) (bool, custom_errors.CustomError) {
+	return s.repo.DeleteStoreProduct(productID, userID)
+}
 func factoryStoreService(repo iRepo) storeService {
 	if service == (storeService{}) {
 		service = storeService{
