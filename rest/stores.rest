@@ -1,7 +1,7 @@
 ### Register Store
 POST http://localhost:4777/store 
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJBMjU2R0NNS1ciLCJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiaXYiOiJtZTdsMUJzdGxUbnNXYWRCIiwidGFnIjoid2ttMnRpZ3p5RVh5T3Z0WnktbTBWZyJ9.5w2ijjITuHNhJ_ekcsdPGMft-PZ2NMhpEDLYFdmz5lo.CRa5w5spEw3VWEXA.lrVtDU5vVegLfUz90vAjFDoJ2haxw8H91kYvuAXjHvq2mQjd15dnkfBvckrZ7_5nlV0ZVtT6JXm3VojQJw3tPSsQXU8Fk64PenlWkbI4W0JpSgLFkfYUj-72Vcy4vIlXf9X_jBIP3tsRzwO_fARzs_XONrf0zBAXe_IkLxl1wDvRx0IR.7fU-IH_RFBcVlDgPtgtAhA
+Authorization: Bearer eyJhbGciOiJBMjU2R0NNS1ciLCJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiaXYiOiJFeXhLNnR3TFh0RDlINkpSIiwidGFnIjoickZuRG43U0czYnpjWlZ1X0dxRmdWQSJ9.NaSf0oJCGjNAMAGJo0C1CtCPZgA-0ThX16dT5cE3bGI.KhAbM7Ch6HluxNPM.c-In6moCy0jNemgbpZY3BWIcJy0_gjiLpHAfKB9jNTzB3bfJwdQNcYvL0va7RT8IWram-2pC7Oz-PmnxEIpqJx3ThqYJ87yv41XIfttMedbxAYDliiEpH4veBB6PYWdaIQnt-B-fGkXx2CZ6fHjJ2zDvxfZfRkXscn_QKFFmkMHqLla0.hbDvl-wHNmOrrunS4pmz_Q
 
 {
   "name": "Planet Sepatu",
@@ -10,7 +10,7 @@ Authorization: Bearer eyJhbGciOiJBMjU2R0NNS1ciLCJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0
 ### Update Store
 PUT http://localhost:4777/store 
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJBMjU2R0NNS1ciLCJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiaXYiOiJtZTdsMUJzdGxUbnNXYWRCIiwidGFnIjoid2ttMnRpZ3p5RVh5T3Z0WnktbTBWZyJ9.5w2ijjITuHNhJ_ekcsdPGMft-PZ2NMhpEDLYFdmz5lo.CRa5w5spEw3VWEXA.lrVtDU5vVegLfUz90vAjFDoJ2haxw8H91kYvuAXjHvq2mQjd15dnkfBvckrZ7_5nlV0ZVtT6JXm3VojQJw3tPSsQXU8Fk64PenlWkbI4W0JpSgLFkfYUj-72Vcy4vIlXf9X_jBIP3tsRzwO_fARzs_XONrf0zBAXe_IkLxl1wDvRx0IR.7fU-IH_RFBcVlDgPtgtAhA
+Authorization: Bearer eyJhbGciOiJBMjU2R0NNS1ciLCJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiaXYiOiJFeXhLNnR3TFh0RDlINkpSIiwidGFnIjoickZuRG43U0czYnpjWlZ1X0dxRmdWQSJ9.NaSf0oJCGjNAMAGJo0C1CtCPZgA-0ThX16dT5cE3bGI.KhAbM7Ch6HluxNPM.c-In6moCy0jNemgbpZY3BWIcJy0_gjiLpHAfKB9jNTzB3bfJwdQNcYvL0va7RT8IWram-2pC7Oz-PmnxEIpqJx3ThqYJ87yv41XIfttMedbxAYDliiEpH4veBB6PYWdaIQnt-B-fGkXx2CZ6fHjJ2zDvxfZfRkXscn_QKFFmkMHqLla0.hbDvl-wHNmOrrunS4pmz_Q
 
 {
   "name": "Planet Sepatu",
@@ -18,10 +18,10 @@ Authorization: Bearer eyJhbGciOiJBMjU2R0NNS1ciLCJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0
 }
 ### Get User's Store
 GET http://localhost:4777/store 
-Authorization: Bearer eyJhbGciOiJBMjU2R0NNS1ciLCJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiaXYiOiJtZTdsMUJzdGxUbnNXYWRCIiwidGFnIjoid2ttMnRpZ3p5RVh5T3Z0WnktbTBWZyJ9.5w2ijjITuHNhJ_ekcsdPGMft-PZ2NMhpEDLYFdmz5lo.CRa5w5spEw3VWEXA.lrVtDU5vVegLfUz90vAjFDoJ2haxw8H91kYvuAXjHvq2mQjd15dnkfBvckrZ7_5nlV0ZVtT6JXm3VojQJw3tPSsQXU8Fk64PenlWkbI4W0JpSgLFkfYUj-72Vcy4vIlXf9X_jBIP3tsRzwO_fARzs_XONrf0zBAXe_IkLxl1wDvRx0IR.7fU-IH_RFBcVlDgPtgtAhA
+Authorization: Bearer eyJhbGciOiJBMjU2R0NNS1ciLCJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiaXYiOiJFeXhLNnR3TFh0RDlINkpSIiwidGFnIjoickZuRG43U0czYnpjWlZ1X0dxRmdWQSJ9.NaSf0oJCGjNAMAGJo0C1CtCPZgA-0ThX16dT5cE3bGI.KhAbM7Ch6HluxNPM.c-In6moCy0jNemgbpZY3BWIcJy0_gjiLpHAfKB9jNTzB3bfJwdQNcYvL0va7RT8IWram-2pC7Oz-PmnxEIpqJx3ThqYJ87yv41XIfttMedbxAYDliiEpH4veBB6PYWdaIQnt-B-fGkXx2CZ6fHjJ2zDvxfZfRkXscn_QKFFmkMHqLla0.hbDvl-wHNmOrrunS4pmz_Q
 ### Create New Product
 POST http://localhost:4777/store/product
-Authorization: Bearer eyJhbGciOiJBMjU2R0NNS1ciLCJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiaXYiOiJtZTdsMUJzdGxUbnNXYWRCIiwidGFnIjoid2ttMnRpZ3p5RVh5T3Z0WnktbTBWZyJ9.5w2ijjITuHNhJ_ekcsdPGMft-PZ2NMhpEDLYFdmz5lo.CRa5w5spEw3VWEXA.lrVtDU5vVegLfUz90vAjFDoJ2haxw8H91kYvuAXjHvq2mQjd15dnkfBvckrZ7_5nlV0ZVtT6JXm3VojQJw3tPSsQXU8Fk64PenlWkbI4W0JpSgLFkfYUj-72Vcy4vIlXf9X_jBIP3tsRzwO_fARzs_XONrf0zBAXe_IkLxl1wDvRx0IR.7fU-IH_RFBcVlDgPtgtAhA
+Authorization: Bearer eyJhbGciOiJBMjU2R0NNS1ciLCJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiaXYiOiJFeXhLNnR3TFh0RDlINkpSIiwidGFnIjoickZuRG43U0czYnpjWlZ1X0dxRmdWQSJ9.NaSf0oJCGjNAMAGJo0C1CtCPZgA-0ThX16dT5cE3bGI.KhAbM7Ch6HluxNPM.c-In6moCy0jNemgbpZY3BWIcJy0_gjiLpHAfKB9jNTzB3bfJwdQNcYvL0va7RT8IWram-2pC7Oz-PmnxEIpqJx3ThqYJ87yv41XIfttMedbxAYDliiEpH4veBB6PYWdaIQnt-B-fGkXx2CZ6fHjJ2zDvxfZfRkXscn_QKFFmkMHqLla0.hbDvl-wHNmOrrunS4pmz_Q
 Connection: application/json
 
 {
@@ -29,6 +29,20 @@ Connection: application/json
   "imageID": "01983ac0-099e-7816-be81-63be2e853502",
   "name": "Kopi Bubuk",
   "description": "Kopi bubuk dari Indonesia",
-  "price": 10000.500,
+  "price": 10000.50,
   "amount": 50
+}
+### Update Product
+PUT http://localhost:4777/store/product
+Authorization: Bearer eyJhbGciOiJBMjU2R0NNS1ciLCJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiaXYiOiJFeXhLNnR3TFh0RDlINkpSIiwidGFnIjoickZuRG43U0czYnpjWlZ1X0dxRmdWQSJ9.NaSf0oJCGjNAMAGJo0C1CtCPZgA-0ThX16dT5cE3bGI.KhAbM7Ch6HluxNPM.c-In6moCy0jNemgbpZY3BWIcJy0_gjiLpHAfKB9jNTzB3bfJwdQNcYvL0va7RT8IWram-2pC7Oz-PmnxEIpqJx3ThqYJ87yv41XIfttMedbxAYDliiEpH4veBB6PYWdaIQnt-B-fGkXx2CZ6fHjJ2zDvxfZfRkXscn_QKFFmkMHqLla0.hbDvl-wHNmOrrunS4pmz_Q
+Connection: application/json
+
+{
+  "ID": "01984615-b34b-76ca-bb7a-5d3465403b13",
+  "categoryID": "01983bce-eb29-78e0-976a-c41d29228e45",
+  "imageID": "01983ac0-099e-7816-be81-63be2e853502",
+  "name": "Meja Kayu Jati",
+  "description": "Meja kayu jati dari Indonesia",
+  "price": 2000000.80,
+  "amount": 2
 }

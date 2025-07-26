@@ -3,7 +3,6 @@ package stores
 import (
 	"digishop/connections"
 	custom_errors "digishop/utilities/errors"
-	"log"
 	"net/http"
 )
 
@@ -60,8 +59,24 @@ func (s storeRepo) GetProductImagePathByID(id string) (string, error) {
 	return path, err
 }
 func (s storeRepo) CreateNewProduct(product productRequest) (bool, custom_errors.CustomError) {
-	log.Println(product.CategoryID)
 	_, err := connections.DbMySQL().Exec("INSERT INTO products(id, category_id, store_id, image_id, name, description, price, amount) VALUES(?,?,?,?,?,?,?,?)", product.ID, product.CategoryID, product.StoreID, product.ImageID, product.Name, product.Description, product.Price, product.Amount)
+	if err != nil {
+		customErr := custom_errors.CustomError{
+			Code:          http.StatusInternalServerError,
+			MessageToSend: "Internal Server Error",
+			Message:       err.Error(),
+		}
+		return true, customErr
+	}
+	return false, custom_errors.CustomError{}
+}
+func (s storeRepo) CheckIsValidUserProduct(userID string, productID string) error {
+	var id int
+	err := connections.DbMySQL().QueryRow("SELECT 1 FROM products JOIN stores ON products.store_id = stores.id WHERE stores.user_id = ? AND products.id = ? LIMIT 1", userID, productID).Scan(&id)
+	return err
+}
+func (s storeRepo) UpdateProducts(product updateProductRequest) (bool, custom_errors.CustomError) {
+	_, err := connections.DbMySQL().Exec("UPDATE products SET category_id = ?, store_id = ?, image_id = ?, name = ?, description = ?, price = ?, amount = ? WHERE id = ?", product.CategoryID, product.StoreID, product.ImageID, product.Name, product.Description, product.Price, product.Amount, product.ID)
 	if err != nil {
 		customErr := custom_errors.CustomError{
 			Code:          http.StatusInternalServerError,

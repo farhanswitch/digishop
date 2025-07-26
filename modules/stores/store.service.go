@@ -3,6 +3,7 @@ package stores
 import (
 	custom_errors "digishop/utilities/errors"
 	"log"
+	"net/http"
 
 	"github.com/google/uuid"
 )
@@ -80,6 +81,52 @@ func (s storeService) CreateNewProductSrv(product productRequest) (bool, custom_
 	}
 	product.ID = strUUID.String()
 	return s.repo.CreateNewProduct(product)
+}
+func (s storeService) UpdateProductSrv(product updateProductRequest) (bool, custom_errors.CustomError) {
+	err := s.repo.CheckIsValidUserProduct(product.UserID, product.ID)
+	if err != nil {
+		return true, custom_errors.CustomError{
+			Code:          http.StatusBadRequest,
+			Message:       err.Error(),
+			MessageToSend: "Invalid product ID",
+		}
+	}
+	_, err = s.repo.GetCategoryNameByID(product.CategoryID)
+	if err != nil {
+		return true, custom_errors.CustomError{
+			Code:          400,
+			Message:       err.Error(),
+			MessageToSend: "Invalid Category ID",
+		}
+	}
+	store, customErr := s.repo.GetStoreByUserID(product.UserID)
+	if customErr != (custom_errors.CustomError{}) {
+		return true, custom_errors.CustomError{
+			Code:          400,
+			Message:       customErr.Message,
+			MessageToSend: "You have no store",
+		}
+	}
+	product.StoreID = store.ID
+	_, err = s.repo.GetProductImagePathByID(product.ImageID)
+	if err != nil {
+		return true, custom_errors.CustomError{
+			Code:          400,
+			Message:       err.Error(),
+			MessageToSend: "Invalid Image ID",
+		}
+	}
+
+	if err != nil {
+		log.Println(err)
+		return true, custom_errors.CustomError{
+			Code:          500,
+			Message:       err.Error(),
+			MessageToSend: "Internal Server Error",
+		}
+	}
+
+	return s.repo.UpdateProducts(product)
 }
 func factoryStoreService(repo iRepo) storeService {
 	if service == (storeService{}) {
