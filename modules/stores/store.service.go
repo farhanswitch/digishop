@@ -128,6 +128,19 @@ func (s storeService) UpdateProductSrv(product updateProductRequest) (bool, cust
 
 	return s.repo.UpdateProducts(product)
 }
+func (s storeService) GetListProductSrv(param getListProductRequest) ([]getListProductResponse, custom_errors.CustomError) {
+	store, customErr := s.repo.GetStoreByUserID(param.UserID)
+	if customErr != (custom_errors.CustomError{}) {
+		return []getListProductResponse{}, custom_errors.CustomError{
+			Code:          http.StatusBadRequest,
+			Message:       customErr.Message,
+			MessageToSend: "You have no store",
+		}
+	}
+	param.StoreID = store.ID
+	param.Offset = (param.PaginationPage - 1) * param.PaginationRows
+	return s.repo.GetListProduct(param)
+}
 func factoryStoreService(repo iRepo) storeService {
 	if service == (storeService{}) {
 		service = storeService{

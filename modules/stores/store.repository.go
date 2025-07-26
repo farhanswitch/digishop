@@ -87,6 +87,24 @@ func (s storeRepo) UpdateProducts(product updateProductRequest) (bool, custom_er
 	}
 	return false, custom_errors.CustomError{}
 }
+func (s storeRepo) GetListProduct(param getListProductRequest) ([]getListProductResponse, custom_errors.CustomError) {
+	var products []getListProductResponse
+	results, err := connections.DbMySQL().Query("CALL get_list_products(?, ?, ?, ?, ?, ?)", param.StoreID, param.PaginationRows, param.Offset, param.SortField, param.SortOrder, param.Search)
+	if err != nil {
+		customErr := custom_errors.CustomError{
+			Code:          http.StatusInternalServerError,
+			MessageToSend: "Internal Server Error",
+			Message:       err.Error(),
+		}
+		return []getListProductResponse{}, customErr
+	}
+	for results.Next() {
+		var product getListProductResponse
+		results.Scan(&product.ID, &product.Name, &product.Description, &product.Price, &product.Amount, &product.CategoryName, &product.ImagePath, &product.StoreName)
+		products = append(products, product)
+	}
+	return products, custom_errors.CustomError{}
+}
 func factoryStoreRepo() iRepo {
 	if repo == (storeRepo{}) {
 		repo = storeRepo{}

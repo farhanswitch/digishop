@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -222,6 +223,70 @@ func (s storeController) updateProductCtrl(w http.ResponseWriter, r *http.Reques
 	}
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, `{"message":"Product updated successfully"}`)
+}
+func (s storeController) getListProductCtrl(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	var userData map[string]interface{}
+	headerUserData := r.Header.Get("X-User-Data")
+	if headerUserData == "" {
+		w.WriteHeader(http.StatusUnauthorized)
+		fmt.Fprintf(w, `{"errors":"Unauthencticated"}`)
+		return
+	}
+	err := json.Unmarshal([]byte(headerUserData), &userData)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, `{"errors":"Invalid sender data"}`)
+		return
+	}
+	query := r.URL.Query()
+	var param getListProductRequest
+	search := query.Get("search")
+	param.Search = search
+	page := query.Get("paginationPage")
+	pageNum, err := strconv.Atoi(page)
+	if err != nil {
+		pageNum = 1 // Default to first page if conversion fails
+	}
+	param.PaginationPage = uint(pageNum)
+	rows := query.Get("paginationRow")
+	pageRow, err := strconv.Atoi(rows)
+	if err != nil {
+		pageRow = 20
+	}
+	param.PaginationRows = uint(pageRow)
+	sortField := query.Get("sortField")
+	param.SortField = sortField
+	sortOrder := query.Get("sortOrder")
+	param.SortOrder = sortOrder
+	param.UserID = userData["id"].(string)
+	validator := validator.New()
+	err = validator.Struct(param)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		objError := custom_errors.ParseError(err)
+		strError, _ := json.Marshal(objError)
+		fmt.Fprintf(w, `{"errors":%s}`, strError)
+		return
+	}
+	data, customErr := s.service.GetListProductSrv(param)
+	if customErr != (custom_errors.CustomError{}) {
+		log.Println(customErr)
+		w.WriteHeader(int(customErr.Code))
+		fmt.Fprintf(w, `{"errors":"%s"}`, customErr.MessageToSend)
+		return
+	}
+	strData, err := json.Marshal(data)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, `{"errors":"%s"}`, "Internal server error")
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, `{"data":%s}`, strData)
 }
 func factoryStoreController(repo iRepo) storeController {
 	if controller == (storeController{}) {
