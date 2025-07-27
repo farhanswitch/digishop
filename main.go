@@ -51,7 +51,7 @@ func initPlugins(router *chi.Mux) {
 		AllowedOrigins:   []string{"*"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
-		ExposedHeaders:   []string{"Link"},
+		ExposedHeaders:   []string{"Link", "Xrf-Token"},
 		AllowCredentials: false,
 		MaxAge:           300, // Maximum value not ignored by any major browsers
 	}))
