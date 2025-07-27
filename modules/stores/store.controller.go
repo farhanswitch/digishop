@@ -177,7 +177,7 @@ func (s storeController) createNewProductCtrl(w http.ResponseWriter, r *http.Req
 		fmt.Fprintf(w, `{"errors":"%s"}`, customErr.MessageToSend)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusCreated)
 	fmt.Fprintf(w, `{"message":"Product created successfully"}`)
 }
 func (s storeController) updateProductCtrl(w http.ResponseWriter, r *http.Request) {
