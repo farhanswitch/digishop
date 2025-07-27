@@ -8,6 +8,7 @@ import (
 	"digishop/configs"
 	"digishop/connections"
 	"digishop/modules/files"
+	"digishop/modules/markets"
 	"digishop/modules/stores"
 	"digishop/modules/users"
 
@@ -41,6 +42,7 @@ func initModules() {
 func internalModules(router *chi.Mux) {
 	users.InitModule(router)
 	files.InitModule(router)
+	markets.InitModule(router)
 	stores.InitModule(router)
 }
 func initPlugins(router *chi.Mux) {

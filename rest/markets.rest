@@ -1,0 +1,2 @@
+### Get All Category
+GET http://localhost:4777/market/categories
