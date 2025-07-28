@@ -1,12 +1,14 @@
 package markets
 
 import (
+	custom_errors "digishop/utilities/errors"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-playground/validator/v10"
 )
 
 type marketController struct {
@@ -91,6 +93,51 @@ func (m marketController) exploreProductsCtrl(w http.ResponseWriter, r *http.Req
 	}
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, `{"data":%s}`, strData)
+}
+func (m marketController) manageCartCtrl(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	var userData map[string]interface{}
+	headerUserData := r.Header.Get("X-User-Data")
+	if headerUserData == "" {
+		w.WriteHeader(http.StatusUnauthorized)
+		fmt.Fprintf(w, `{"errors":"Unauthencticated"}`)
+		return
+	}
+	err := json.Unmarshal([]byte(headerUserData), &userData)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, `{"errors":"Invalid sender data"}`)
+		return
+	}
+	var param manageCartRequest
+	err = json.NewDecoder(r.Body).Decode(&param)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, `{"errors":"Invalid request body"}`)
+		return
+	}
+	param.UserID = userData["id"].(string)
+	validator := validator.New()
+	err = validator.Struct(param)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		objError := custom_errors.ParseError(err)
+		strError, _ := json.Marshal(objError)
+		fmt.Fprintf(w, `{"errors":%s}`, strError)
+		return
+	}
+	customErr := m.service.ManageCartSrv(param.UserID, param.ProductID, param.Quantity)
+	if customErr.Code != 0 {
+		log.Println(customErr)
+		w.WriteHeader(int(customErr.Code))
+		fmt.Fprintf(w, `{"errors":"%s"}`, customErr.MessageToSend)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, `{"data":%s}`, "Success Add to Cart")
 }
 
 func factoryMarketController(repo iRepo) marketController {

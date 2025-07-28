@@ -96,6 +96,17 @@ func (m marketRepo) ExploreProducts(search string) ([]productData, custom_errors
 	}
 	return products, custom_errors.CustomError{}
 }
+func (m marketRepo) ManageCart(userID string, productID string, quantity int) custom_errors.CustomError {
+	_, err := connections.DbMySQL().Exec("CALL manage_cart(?, ?, ?)", userID, productID, quantity)
+	if err != nil {
+		return custom_errors.CustomError{
+			Code:          http.StatusInternalServerError,
+			MessageToSend: "Internal Server Error",
+			Message:       err.Error(),
+		}
+	}
+	return custom_errors.CustomError{}
+}
 
 func factoryMarketRepository() iRepo {
 	if repo == (marketRepo{}) {
