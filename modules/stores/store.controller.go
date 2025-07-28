@@ -279,6 +279,9 @@ func (s storeController) getListProductCtrl(w http.ResponseWriter, r *http.Reque
 		fmt.Fprintf(w, `{"errors":"%s"}`, customErr.MessageToSend)
 		return
 	}
+	if data == nil {
+		data = []getListProductResponse{}
+	}
 	strData, err := json.Marshal(data)
 	if err != nil {
 		log.Println(err)
