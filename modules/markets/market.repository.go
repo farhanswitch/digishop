@@ -60,7 +60,44 @@ func (m marketRepo) GetListProductByCategory(categoryID string) ([]productData, 
 	}
 	return products, custom_errors.CustomError{}
 }
-func factoryMarketRepository() marketRepo {
+func (m marketRepo) GetProductDetailByID(productID string) (productDetail, custom_errors.CustomError) {
+	var product productDetail
+	err := connections.DbMySQL().QueryRow("SELECT p.id, p.name, p.price, s.name, f.filename, p.description, c.name, p.amount FROM products p JOIN stores s ON p.store_id = s.id JOIN files f ON p.image_id = f.id JOIN categories c ON p.category_id = c.id WHERE p.id = ? LIMIT 1", productID).Scan(&product.ID, &product.Name, &product.Price, &product.StoreName, &product.ImagePath, &product.Description, &product.CategoryName, &product.Amount)
+	if err != nil {
+		return productDetail{}, custom_errors.CustomError{
+			Code:          http.StatusInternalServerError,
+			MessageToSend: "Internal Server Error",
+			Message:       err.Error(),
+		}
+	}
+	return product, custom_errors.CustomError{}
+}
+func (m marketRepo) ExploreProducts(search string) ([]productData, custom_errors.CustomError) {
+	var products []productData
+	results, err := connections.DbMySQL().Query("CALL explore_products(?)", search)
+	if err != nil {
+		return []productData{}, custom_errors.CustomError{
+			Code:          http.StatusInternalServerError,
+			MessageToSend: "Internal Server Error",
+			Message:       err.Error(),
+		}
+	}
+	for results.Next() {
+		var data productData
+		err := results.Scan(&data.ID, &data.Name, &data.Price, &data.StoreName, &data.ImagePath)
+		if err != nil {
+			return []productData{}, custom_errors.CustomError{
+				Code:          http.StatusInternalServerError,
+				MessageToSend: "Internal Server Error",
+				Message:       err.Error(),
+			}
+		}
+		products = append(products, data)
+	}
+	return products, custom_errors.CustomError{}
+}
+
+func factoryMarketRepository() iRepo {
 	if repo == (marketRepo{}) {
 		repo = marketRepo{}
 	}

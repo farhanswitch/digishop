@@ -10,4 +10,6 @@ func InitModule(router *chi.Mux) {
 
 	router.Get("/market/categories", controller.getAllCategoryCtrl)
 	router.Get("/market/products-by-category", controller.getListProductByCategoryCtrl)
+	router.Get("/market/product-detail/{id}", controller.getProductDetailByIDCtrl)
+	router.Get("/market/explore-products", controller.exploreProductsCtrl)
 }

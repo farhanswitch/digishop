@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/go-chi/chi/v5"
 )
 
 type marketController struct {
@@ -51,12 +53,50 @@ func (m marketController) getListProductByCategoryCtrl(w http.ResponseWriter, r 
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, `{"data":%s}`, strData)
 }
+func (m marketController) getProductDetailByIDCtrl(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	id := chi.URLParam(r, "id")
+	product, customErr := m.service.GetProductDetailByIDSrv(id)
+	if customErr.Code != 0 {
+		log.Println(customErr)
+		w.WriteHeader(int(customErr.Code))
+		fmt.Fprintf(w, `{"errors":"%s"}`, customErr.MessageToSend)
+		return
+	}
+	strData, err := json.Marshal(product)
+	if err != nil {
+		log.Printf("Error marshalling data: %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, `{"errors":"%s"}`, "Internal server error")
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, `{"data":%s}`, strData)
+}
+func (m marketController) exploreProductsCtrl(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	listProduct, customErr := m.service.ExploreProductsSrv(r.URL.Query().Get("search"))
+	if customErr.Code != 0 {
+		log.Println(customErr)
+		w.WriteHeader(int(customErr.Code))
+		fmt.Fprintf(w, `{"errors":"%s"}`, customErr.MessageToSend)
+		return
+	}
+	strData, err := json.Marshal(listProduct)
+	if err != nil {
+		log.Printf("Error marshalling data: %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, `{"errors":"%s"}`, "Internal server error")
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, `{"data":%s}`, strData)
+}
+
 func factoryMarketController(repo iRepo) marketController {
 	if controller == (marketController{}) {
 		service := factoryMarketService(repo)
-		controller = marketController{
-			service: service,
-		}
+		controller = marketController{service: service}
 	}
 	return controller
 }
