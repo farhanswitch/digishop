@@ -66,8 +66,8 @@ func (f fileController) UploadFileCtrl(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, `{"errors":"%s"}`, err.Error())
 		return
 	}
-	var newFileName string = strUUID.String() + fileExtension
-	var fileNamePatternToSave string = "uploads/" + fmt.Sprintf("%d", time.Now().Unix()) + "--" + strUUID.String() + fileExtension
+	var newFileName string = fmt.Sprintf("%d", time.Now().Unix()) + "--" + strUUID.String() + fileExtension
+	var fileNamePatternToSave string = "uploads/" + newFileName
 	var dataToSave fileData = fileData{
 		ID:               strUUID.String(),
 		FileName:         newFileName,

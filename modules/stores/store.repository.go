@@ -100,7 +100,14 @@ func (s storeRepo) GetListProduct(param getListProductRequest) ([]getListProduct
 	}
 	for results.Next() {
 		var product getListProductResponse
-		results.Scan(&product.ID, &product.Name, &product.Description, &product.Price, &product.Amount, &product.CategoryName, &product.ImagePath, &product.StoreName)
+		err = results.Scan(&product.ID, &product.Name, &product.Description, &product.Price, &product.Amount, &product.CategoryName, &product.ImagePath, &product.StoreName)
+		if err != nil {
+			return []getListProductResponse{}, custom_errors.CustomError{
+				Code:          http.StatusInternalServerError,
+				MessageToSend: "Internal Server Error",
+				Message:       err.Error(),
+			}
+		}
 		products = append(products, product)
 	}
 	return products, custom_errors.CustomError{}
