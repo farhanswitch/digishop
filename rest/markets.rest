@@ -9,3 +9,7 @@ GET http://localhost:4777/market/product-detail/01984eeb-baad-7877-abbf-a21d2643
 
 ### Explore Products
 GET http://localhost:4777/market/explore-products?search=acer
+
+### Get User Carts
+GET http://localhost:4777/market/cart
+Authorization: Bearer eyJhbGciOiJBMjU2R0NNS1ciLCJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiaXYiOiI0ejJCdy04ekkydGRvb240IiwidGFnIjoid0JjaEJNbTBIV3NyTVBNN0k2RkV2dyJ9.8xmdtzE0RjcyAUbAUMewerB1U_TOmWiWCNoaxUQB9QU.NeWpKay6VzGiWG25.K0a6nu2yPlRR4WiM8-1UlYtUux3snBz3a9Z_8Xmeo1zjKbUqOXHMUgIIdccMt81boTxhuii49NLt3_idKbrbG4BaVtoemWsDXL50DAHHykQegj37gDLV5HF8hlG_7N7-DIFpdWeZgckqIDRbKqYT7QZKinlVEIYrrXCeYUZt46bNkMjs.nk_c1QyqXX7VUJ6CTvlxtg

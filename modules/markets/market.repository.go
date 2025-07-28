@@ -107,6 +107,30 @@ func (m marketRepo) ManageCart(userID string, productID string, quantity int) cu
 	}
 	return custom_errors.CustomError{}
 }
+func (m marketRepo) GetUserCarts(userID string) ([]cartData, custom_errors.CustomError) {
+	var carts []cartData
+	results, err := connections.DbMySQL().Query("CALL get_user_cart(?)", userID)
+	if err != nil {
+		return []cartData{}, custom_errors.CustomError{
+			Code:          http.StatusInternalServerError,
+			MessageToSend: "Internal Server Error",
+			Message:       err.Error(),
+		}
+	}
+	for results.Next() {
+		var data cartData
+		err := results.Scan(&data.ProductID, &data.ProductName, &data.ProductPrice, &data.ProductAmount, &data.ProductImagePath, &data.StoreName, &data.CartQuantity)
+		if err != nil {
+			return []cartData{}, custom_errors.CustomError{
+				Code:          http.StatusInternalServerError,
+				MessageToSend: "Internal Server Error",
+				Message:       err.Error(),
+			}
+		}
+		carts = append(carts, data)
+	}
+	return carts, custom_errors.CustomError{}
+}
 
 func factoryMarketRepository() iRepo {
 	if repo == (marketRepo{}) {

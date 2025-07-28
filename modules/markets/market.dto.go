@@ -29,11 +29,20 @@ type manageCartRequest struct {
 	Quantity  int    `json:"quantity" validate:"required"`
 	UserID    string `json:"userID" validate:"required"`
 }
-
+type cartData struct {
+	ProductID        string  `json:"productID"`
+	ProductName      string  `json:"productName"`
+	ProductPrice     float64 `json:"productPrice"`
+	ProductAmount    int     `json:"productAmount"`
+	ProductImagePath string  `json:"productImagePath"`
+	StoreName        string  `json:"storeName"`
+	CartQuantity     int     `json:"cartQuantity"`
+}
 type iRepo interface {
 	GetAllCategory() ([]category, custom_errors.CustomError)
 	GetListProductByCategory(categoryID string) ([]productData, custom_errors.CustomError)
 	GetProductDetailByID(productID string) (productDetail, custom_errors.CustomError)
 	ExploreProducts(search string) ([]productData, custom_errors.CustomError)
 	ManageCart(userID string, productID string, quantity int) custom_errors.CustomError
+	GetUserCarts(userID string) ([]cartData, custom_errors.CustomError)
 }

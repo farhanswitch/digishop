@@ -139,7 +139,43 @@ func (m marketController) manageCartCtrl(w http.ResponseWriter, r *http.Request)
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, `{"data":%s}`, "Success Add to Cart")
 }
+func (m marketController) getUserCartCtrl(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	var userData map[string]interface{}
+	headerUserData := r.Header.Get("X-User-Data")
+	if headerUserData == "" {
+		w.WriteHeader(http.StatusUnauthorized)
+		fmt.Fprintf(w, `{"errors":"Unauthencticated"}`)
+		return
+	}
+	err := json.Unmarshal([]byte(headerUserData), &userData)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, `{"errors":"Invalid sender data"}`)
+		return
+	}
 
+	data, customErr := m.service.GetUserCartsSrv(userData["id"].(string))
+	if customErr.Code > 0 {
+		log.Println(customErr)
+		w.WriteHeader(int(customErr.Code))
+		fmt.Fprintf(w, `{"errors":"%s"}`, customErr.MessageToSend)
+		return
+	}
+	if data == nil {
+		data = []cartData{}
+	}
+	strData, err := json.Marshal(data)
+	if err != nil {
+		log.Printf("Error marshalling data: %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, `{"errors":"%s"}`, "Internal server error")
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, `{"data":%s}`, strData)
+}
 func factoryMarketController(repo iRepo) marketController {
 	if controller == (marketController{}) {
 		service := factoryMarketService(repo)

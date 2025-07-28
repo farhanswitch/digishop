@@ -16,4 +16,5 @@ func InitModule(router *chi.Mux) {
 	router.Get("/market/explore-products", controller.exploreProductsCtrl)
 
 	router.With(middlewares.AuthMiddleware).Post("/market/cart/submit", controller.manageCartCtrl)
+	router.With(middlewares.AuthMiddleware).Get("/market/cart", controller.getUserCartCtrl)
 }
