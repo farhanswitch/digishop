@@ -2,9 +2,41 @@ package markets
 
 import (
 	"digishop/connections"
+	"errors"
+
 	custom_errors "digishop/utilities/errors"
+
 	"net/http"
+	"time"
 )
+
+func convertTimestamp(value interface{}) (time.Time, error) {
+	var t time.Time
+
+	switch v := value.(type) {
+	case time.Time:
+		// Sudah bertipe time.Time
+		t = v
+	case []byte:
+		// Konversi []byte -> string -> time.Time
+		timeStr := string(v)
+		t, err := time.Parse("2006-01-02 15:04:05", timeStr)
+		if err != nil {
+			return time.Now(), err
+		}
+		return t, nil
+	case string:
+		// Kalau MySQL driver langsung kirim string
+		t, err := time.Parse("2006-01-02 15:04:05", v)
+		if err != nil {
+			return time.Now(), err
+		}
+		return t, nil
+	default:
+		return time.Now(), errors.New("unsupported timestamp type")
+	}
+	return t, nil
+}
 
 type marketRepo struct {
 }
@@ -131,7 +163,39 @@ func (m marketRepo) GetUserCarts(userID string) ([]cartData, custom_errors.Custo
 	}
 	return carts, custom_errors.CustomError{}
 }
-
+func (m marketRepo) GetUserNotifications(userID string) ([]notificationData, custom_errors.CustomError) {
+	var notifications []notificationData
+	results, err := connections.DbMySQL().Query("SELECT title, description, created_at FROM notifications WHERE user_id = ? ORDER BY created_at DESC", userID)
+	if err != nil {
+		return []notificationData{}, custom_errors.CustomError{
+			Code:          http.StatusInternalServerError,
+			MessageToSend: "Internal Server Error",
+			Message:       err.Error(),
+		}
+	}
+	for results.Next() {
+		var valueCreated interface{}
+		var data notificationData
+		err := results.Scan(&data.Title, &data.Description, &valueCreated)
+		if err != nil {
+			return []notificationData{}, custom_errors.CustomError{
+				Code:          http.StatusInternalServerError,
+				MessageToSend: "Internal Server Error",
+				Message:       err.Error(),
+			}
+		}
+		data.CreatedAt, err = convertTimestamp(valueCreated)
+		if err != nil {
+			return []notificationData{}, custom_errors.CustomError{
+				Code:          http.StatusInternalServerError,
+				MessageToSend: "Internal Server Error",
+				Message:       err.Error(),
+			}
+		}
+		notifications = append(notifications, data)
+	}
+	return notifications, custom_errors.CustomError{}
+}
 func factoryMarketRepository() iRepo {
 	if repo == (marketRepo{}) {
 		repo = marketRepo{}

@@ -29,7 +29,9 @@ func (m marketService) ManageCartSrv(userID string, productID string, quantity i
 func (m marketService) GetUserCartsSrv(userID string) ([]cartData, custom_errors.CustomError) {
 	return m.repo.GetUserCarts(userID)
 }
-
+func (m marketService) GetUserNotificationsSrv(userID string) ([]notificationData, custom_errors.CustomError) {
+	return m.repo.GetUserNotifications(userID)
+}
 func factoryMarketService(repo iRepo) marketService {
 	if service == (marketService{}) {
 		service = marketService{

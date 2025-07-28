@@ -1,6 +1,9 @@
 package markets
 
-import custom_errors "digishop/utilities/errors"
+import (
+	custom_errors "digishop/utilities/errors"
+	"time"
+)
 
 type category struct {
 	ID   string `json:"id"`
@@ -38,6 +41,11 @@ type cartData struct {
 	StoreName        string  `json:"storeName"`
 	CartQuantity     int     `json:"cartQuantity"`
 }
+type notificationData struct {
+	Title       string    `json:"title"`
+	Description string    `json:"body"`
+	CreatedAt   time.Time `json:"createdAt"`
+}
 type iRepo interface {
 	GetAllCategory() ([]category, custom_errors.CustomError)
 	GetListProductByCategory(categoryID string) ([]productData, custom_errors.CustomError)
@@ -45,4 +53,5 @@ type iRepo interface {
 	ExploreProducts(search string) ([]productData, custom_errors.CustomError)
 	ManageCart(userID string, productID string, quantity int) custom_errors.CustomError
 	GetUserCarts(userID string) ([]cartData, custom_errors.CustomError)
+	GetUserNotifications(userID string) ([]notificationData, custom_errors.CustomError)
 }

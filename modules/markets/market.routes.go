@@ -17,4 +17,5 @@ func InitModule(router *chi.Mux) {
 
 	router.With(middlewares.AuthMiddleware).Post("/market/cart/submit", controller.manageCartCtrl)
 	router.With(middlewares.AuthMiddleware).Get("/market/cart", controller.getUserCartCtrl)
+	router.With(middlewares.AuthMiddleware).Get("/market/notifications", controller.getUserNotificationsCtrl)
 }
