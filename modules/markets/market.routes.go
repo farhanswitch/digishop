@@ -9,4 +9,5 @@ func InitModule(router *chi.Mux) {
 	controller := factoryMarketController(repo)
 
 	router.Get("/market/categories", controller.getAllCategoryCtrl)
+	router.Get("/market/products-by-category", controller.getListProductByCategoryCtrl)
 }

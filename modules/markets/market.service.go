@@ -14,6 +14,9 @@ func (m marketService) GetAllCategorySrv() ([]category, custom_errors.CustomErro
 
 	return m.repo.GetAllCategory()
 }
+func (m marketService) GetListProductByCategorySrv(categoryID string) ([]productData, custom_errors.CustomError) {
+	return m.repo.GetListProductByCategory(categoryID)
+}
 
 func factoryMarketService(repo iRepo) marketService {
 	if service == (marketService{}) {

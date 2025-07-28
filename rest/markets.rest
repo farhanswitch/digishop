@@ -1,2 +1,5 @@
 ### Get All Category
 GET http://localhost:4777/market/categories
+
+### Get List Product By Category
+GET http://localhost:4777/market/products-by-category?categoryID=01983bce-eb29-78e0-976a-c41d29228e45
