@@ -23,6 +23,11 @@ func main() {
 
 	initPlugins(router)
 	internalModules(router)
+	router.Options("/*", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println(r.Header.Get("Origin"))
+
+		w.WriteHeader(http.StatusOK)
+	})
 
 	router.Get("/hello", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -46,15 +51,15 @@ func internalModules(router *chi.Mux) {
 	stores.InitModule(router)
 }
 func initPlugins(router *chi.Mux) {
-	router.Use(middleware.Recoverer)
-	// Middleware CORS
-
 	router.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link", "Xrf-Token"},
 		AllowCredentials: false,
-		MaxAge:           300, // Maximum value not ignored by any major browsers
+		MaxAge:           300,
 	}))
+	router.Use(middleware.Recoverer)
+	// Middleware CORS
+
 }

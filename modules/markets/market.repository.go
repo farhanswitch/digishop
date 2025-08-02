@@ -70,7 +70,7 @@ func (m marketRepo) GetAllCategory() ([]category, custom_errors.CustomError) {
 }
 func (m marketRepo) GetListProductByCategory(categoryID string) ([]productData, custom_errors.CustomError) {
 	var products []productData
-	results, err := connections.DbMySQL().Query("SELECT p.id, p.name, p.price, s.name, f.filename FROM products p  JOIN stores s ON p.store_id = s.id JOIN files f ON p.image_id = f.id WHERE p.category_id = ?", categoryID)
+	results, err := connections.DbMySQL().Query("SELECT p.id, p.name, p.price, s.name, f.filename FROM products p  JOIN stores s ON p.store_id = s.id JOIN files f ON p.image_id = f.id WHERE p.category_id = ? ORDER BY p.name ASC", categoryID)
 	if err != nil {
 		return []productData{}, custom_errors.CustomError{
 			Code:          http.StatusInternalServerError,
