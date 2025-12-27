@@ -51,7 +51,7 @@ type iRepo interface {
 	GetListProductByCategory(categoryID string) ([]productData, custom_errors.CustomError)
 	GetProductDetailByID(productID string) (productDetail, custom_errors.CustomError)
 	ExploreProducts(search string) ([]productData, custom_errors.CustomError)
-	ManageCart(userID string, productID string, quantity int) custom_errors.CustomError
+	ManageCart(uuid string, userID string, productID string, quantity int) custom_errors.CustomError
 	GetUserCarts(userID string) ([]cartData, custom_errors.CustomError)
 	GetUserNotifications(userID string) ([]notificationData, custom_errors.CustomError)
 }

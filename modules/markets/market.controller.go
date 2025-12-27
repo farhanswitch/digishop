@@ -45,6 +45,9 @@ func (m marketController) getListProductByCategoryCtrl(w http.ResponseWriter, r 
 		fmt.Fprintf(w, `{"errors":"%s"}`, customErr.MessageToSend)
 		return
 	}
+	if listProduct == nil {
+		listProduct = []productData{}
+	}
 	strData, err := json.Marshal(listProduct)
 	if err != nil {
 		log.Printf("Error marshalling data: %v", err)

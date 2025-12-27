@@ -2,6 +2,9 @@ package markets
 
 import (
 	custom_errors "digishop/utilities/errors"
+	"log"
+
+	"github.com/google/uuid"
 )
 
 type marketService struct {
@@ -24,7 +27,16 @@ func (m marketService) ExploreProductsSrv(search string) ([]productData, custom_
 	return m.repo.ExploreProducts(search)
 }
 func (m marketService) ManageCartSrv(userID string, productID string, quantity int) custom_errors.CustomError {
-	return m.repo.ManageCart(userID, productID, quantity)
+	strUUID, err := uuid.NewV7()
+	if err != nil {
+		log.Println(err)
+		return custom_errors.CustomError{
+			Code:          500,
+			Message:       err.Error(),
+			MessageToSend: "Internal Server Error",
+		}
+	}
+	return m.repo.ManageCart(strUUID.String(), userID, productID, quantity)
 }
 func (m marketService) GetUserCartsSrv(userID string) ([]cartData, custom_errors.CustomError) {
 	return m.repo.GetUserCarts(userID)

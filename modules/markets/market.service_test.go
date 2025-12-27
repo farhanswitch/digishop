@@ -146,7 +146,7 @@ func TestManageCartSrv(t *testing.T) {
 	mockRepo := NewMockRepo(ctrl)
 	service := marketService{repo: mockRepo}
 
-	err := service.ManageCartSrv("user1", "product1", 2)
+	err := service.ManageCartSrv("uuid1", "user1", "product1", 2)
 
 	assert.Empty(t, err)
 }
