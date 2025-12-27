@@ -117,15 +117,6 @@ func (s storeService) UpdateProductSrv(product updateProductRequest) (bool, cust
 		}
 	}
 
-	if err != nil {
-		log.Println(err)
-		return true, custom_errors.CustomError{
-			Code:          500,
-			Message:       err.Error(),
-			MessageToSend: "Internal Server Error",
-		}
-	}
-
 	return s.repo.UpdateProducts(product)
 }
 func (s storeService) GetListProductSrv(param getListProductRequest) ([]getListProductResponse, custom_errors.CustomError) {
