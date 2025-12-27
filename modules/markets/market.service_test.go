@@ -61,7 +61,7 @@ func (m *mockRepo) ExploreProducts(search string) ([]productData, custom_errors.
 	}, custom_errors.CustomError{}
 }
 
-func (m *mockRepo) ManageCart(userID string, productID string, quantity int) custom_errors.CustomError {
+func (m *mockRepo) ManageCart(strUUID string, userID string, productID string, quantity int) custom_errors.CustomError {
 	return custom_errors.CustomError{}
 }
 
@@ -146,7 +146,7 @@ func TestManageCartSrv(t *testing.T) {
 	mockRepo := NewMockRepo(ctrl)
 	service := marketService{repo: mockRepo}
 
-	err := service.ManageCartSrv("uuid1", "user1", "product1", 2)
+	err := service.ManageCartSrv("user1", "product1", 2)
 
 	assert.Empty(t, err)
 }
